@@ -1,4 +1,4 @@
-package co.edu.unal.ares.negocio.dominio;
+package ares.negocio.dominio;
 
 /**
  * Tipos de movimiento de inventario. Se guarda como texto (columna movimiento_inventario.tipo).

@@ -1,7 +1,7 @@
-package co.edu.unal.ares.datos.jpa;
+package ares.datos.jpa;
 
-import co.edu.unal.ares.datos.MovimientoRepository;
-import co.edu.unal.ares.negocio.dominio.MovimientoInventario;
+import ares.datos.MovimientoRepository;
+import ares.negocio.dominio.MovimientoInventario;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;

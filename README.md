@@ -71,8 +71,11 @@ El esquema está versionado con Flyway en `src/main/resources/db/migration`:
 
 - `V1__esquema_inicial.sql`: tablas, llaves foráneas y restricciones CHECK.
 - `V2__datos_prueba.sql`: datos para ejercitar las reglas en la sustentación.
+- `V3__codigo_barras_producto.sql`: código de barras opcional y único; admite varias presentaciones con el mismo nombre.
 
-Un archivo de migración que ya está en `main` no se edita. Los cambios van en un archivo nuevo (`V3__...`).
+Un archivo de migración que ya está en `main` no se edita. Los cambios van en un archivo nuevo (por ejemplo, `V4__...`).
+
+En CU-07, `GET /productos/nuevo` presenta el formulario y `POST /productos` registra el producto sin mínimo, con cero días de aviso por defecto. Un código de barras ya registrado se reconoce como producto existente; si solo coincide el nombre, la empleada confirma si se trata de otra presentación. `volverA=entrada` conserva el regreso a `/entradas/nueva` después del registro.
 
 ## Cómo trabajamos
 

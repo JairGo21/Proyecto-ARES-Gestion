@@ -1,4 +1,4 @@
-package co.edu.unal.ares.presentacion;
+package ares.presentacion;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;

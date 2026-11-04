@@ -1,4 +1,4 @@
-package co.edu.unal.ares.negocio.dominio;
+package ares.negocio.dominio;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,8 +27,11 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre", nullable = false, unique = true, length = 120)
+    @Column(name = "nombre", nullable = false, length = 120)
     private String nombre;
+
+    @Column(name = "codigo_barras", unique = true, length = 64)
+    private String codigoBarras;
 
     @Column(name = "perecedero", nullable = false)
     private boolean perecedero;
@@ -53,6 +56,11 @@ public class Producto {
     }
 
     public Producto(String nombre, boolean perecedero, Integer cantidadMinima, int diasAviso) {
+        this(nombre, null, perecedero, cantidadMinima, diasAviso);
+    }
+
+    public Producto(String nombre, String codigoBarras, boolean perecedero,
+                    Integer cantidadMinima, int diasAviso) {
         if (nombre == null || nombre.isBlank()) {
             throw new ReglaNegocioException("El nombre del producto es obligatorio.");
         }
@@ -63,6 +71,8 @@ public class Producto {
             throw new ReglaNegocioException("Los días de aviso no pueden ser negativos.");
         }
         this.nombre = nombre.trim();
+        this.codigoBarras = codigoBarras == null || codigoBarras.isBlank()
+                ? null : codigoBarras.trim();
         this.perecedero = perecedero;
         this.cantidadMinima = cantidadMinima;
         this.diasAviso = diasAviso;
@@ -93,6 +103,10 @@ public class Producto {
 
     public String getNombre() {
         return nombre;
+    }
+
+    public String getCodigoBarras() {
+        return codigoBarras;
     }
 
     public boolean isPerecedero() {

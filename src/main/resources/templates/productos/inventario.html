@@ -6,6 +6,7 @@
 
 <main class="contenido">
     <h1>Inventario</h1>
+    <p class="mensaje-exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
     <p class="nota">Stock actual = suma de la cantidad disponible de los lotes de cada producto.</p>
 
     <p th:if="${#lists.isEmpty(productos)}">No hay productos registrados.</p>

@@ -1,6 +1,6 @@
-package co.edu.unal.ares.datos;
+package ares.datos;
 
-import co.edu.unal.ares.negocio.dominio.Alerta;
+import ares.negocio.dominio.Alerta;
 
 /**
  * No tiene "cerrarAlertasDeLote": cerrar una alerta es una regla de la entidad

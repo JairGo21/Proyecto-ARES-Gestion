@@ -1,7 +1,7 @@
-package co.edu.unal.ares.datos.jpa;
+package ares.datos.jpa;
 
-import co.edu.unal.ares.datos.LoteRepository;
-import co.edu.unal.ares.negocio.dominio.Lote;
+import ares.datos.LoteRepository;
+import ares.negocio.dominio.Lote;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;

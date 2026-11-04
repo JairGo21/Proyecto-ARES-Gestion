@@ -1,6 +1,6 @@
-package co.edu.unal.ares.datos;
+package ares.datos;
 
-import co.edu.unal.ares.negocio.dominio.Lote;
+import ares.negocio.dominio.Lote;
 
 import java.util.Optional;
 

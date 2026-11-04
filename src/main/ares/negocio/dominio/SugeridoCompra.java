@@ -1,4 +1,4 @@
-package co.edu.unal.ares.negocio.dominio;
+package ares.negocio.dominio;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package co.edu.unal.ares.presentacion;
+package ares.presentacion;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

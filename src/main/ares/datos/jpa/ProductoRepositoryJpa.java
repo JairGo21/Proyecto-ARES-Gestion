@@ -1,7 +1,7 @@
-package co.edu.unal.ares.datos.jpa;
+package ares.datos.jpa;
 
-import co.edu.unal.ares.datos.ProductoRepository;
-import co.edu.unal.ares.negocio.dominio.Producto;
+import ares.datos.ProductoRepository;
+import ares.negocio.dominio.Producto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -53,6 +53,31 @@ public class ProductoRepositoryJpa implements ProductoRepository {
                 .setParameter("nombre", nombre.trim().toLowerCase())
                 .getSingleResult();
         return cantidad > 0;
+    }
+
+    @Override
+    public List<Producto> buscarPorNombreExacto(String nombre) {
+        if (nombre == null) {
+            return List.of();
+        }
+        return em.createQuery(
+                        "select p from Producto p where lower(p.nombre) = :nombre order by p.nombre",
+                        Producto.class)
+                .setParameter("nombre", nombre.trim().toLowerCase())
+                .getResultList();
+    }
+
+    @Override
+    public Optional<Producto> buscarPorCodigoBarras(String codigoBarras) {
+        if (codigoBarras == null || codigoBarras.isBlank()) {
+            return Optional.empty();
+        }
+        return em.createQuery(
+                        "select p from Producto p where p.codigoBarras = :codigoBarras", Producto.class)
+                .setParameter("codigoBarras", codigoBarras.trim())
+                .getResultList()
+                .stream()
+                .findFirst();
     }
 
     @Override

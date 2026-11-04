@@ -1,9 +1,9 @@
-package co.edu.unal.ares.negocio.servicio;
+package ares.negocio.servicio;
 
-import co.edu.unal.ares.datos.UsuarioRepository;
-import co.edu.unal.ares.negocio.dominio.ReglaNegocioException;
-import co.edu.unal.ares.negocio.dominio.RolUsuario;
-import co.edu.unal.ares.negocio.dominio.Usuario;
+import ares.datos.UsuarioRepository;
+import ares.negocio.dominio.ReglaNegocioException;
+import ares.negocio.dominio.RolUsuario;
+import ares.negocio.dominio.Usuario;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

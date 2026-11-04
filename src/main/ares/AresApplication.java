@@ -1,4 +1,4 @@
-package co.edu.unal.ares;
+package ares;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

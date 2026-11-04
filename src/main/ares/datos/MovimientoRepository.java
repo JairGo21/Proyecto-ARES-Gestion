@@ -1,6 +1,6 @@
-package co.edu.unal.ares.datos;
+package ares.datos;
 
-import co.edu.unal.ares.negocio.dominio.MovimientoInventario;
+import ares.negocio.dominio.MovimientoInventario;
 
 import java.util.List;
 

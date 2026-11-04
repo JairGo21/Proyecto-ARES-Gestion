@@ -1,4 +1,4 @@
-package co.edu.unal.ares.negocio.dominio;
+package ares.negocio.dominio;
 
 /**
  * Se lanza cuando una entidad rechaza una operación porque viola una regla del negocio

@@ -1,7 +1,7 @@
-package co.edu.unal.ares.presentacion;
+package ares.presentacion;
 
-import co.edu.unal.ares.negocio.dominio.Usuario;
-import co.edu.unal.ares.negocio.servicio.UsuarioService;
+import ares.negocio.dominio.Usuario;
+import ares.negocio.servicio.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 

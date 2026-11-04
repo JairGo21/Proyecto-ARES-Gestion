@@ -1,6 +1,6 @@
-package co.edu.unal.ares.datos;
+package ares.datos;
 
-import co.edu.unal.ares.negocio.dominio.Producto;
+import ares.negocio.dominio.Producto;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +20,14 @@ public interface ProductoRepository {
     /** Búsqueda parcial por nombre, sin distinguir mayúsculas (CU-02 paso 4, CU-03). */
     List<Producto> buscarPorNombre(String texto);
 
-    /** ¿Ya existe un producto con exactamente ese nombre? (CU-07, sin distinguir mayúsculas). */
+    /** ¿Hay algún producto con exactamente ese nombre? (sin distinguir mayúsculas). */
     boolean existePorNombre(String nombre);
+
+    /** Productos cuyo nombre coincide exactamente, sin distinguir mayúsculas (CU-07). */
+    List<Producto> buscarPorNombreExacto(String nombre);
+
+    /** Busca un producto por su código de barras único (CU-07). */
+    Optional<Producto> buscarPorCodigoBarras(String codigoBarras);
 
     Producto guardar(Producto producto);
 }
