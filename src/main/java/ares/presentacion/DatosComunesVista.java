@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.List;
 
-/** Agrega a todas las vistas los datos de la barra superior (selector de usuario). */
+/** Este controlador agrega a todas las vistas los datos de la barra superior (selector de usuario). */
 @ControllerAdvice
 public class DatosComunesVista {
 

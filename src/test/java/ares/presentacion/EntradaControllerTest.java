@@ -198,7 +198,7 @@ class EntradaControllerTest {
         assertNotNull(model.getAttribute("producto"));
         assertFalse(((java.util.List<?>) model.getAttribute("movimientos")).isEmpty());
     }
-
+    
     @Test
     void verHistorial_sinProducto_soloMuestraElSelector() {
         ExtendedModelMap model = new ExtendedModelMap();
