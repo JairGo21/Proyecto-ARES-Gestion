@@ -65,7 +65,6 @@ el Controller llama al Service y el Service llama a los Repository.
 | `datos` | Datos | Interfaces `*Repository` (patrón Repositorio). |
 | `datos.jpa` | Datos | Implementaciones `*RepositoryJpa` con JPA. |
 | `externos` | Externos | Vacía en el sprint 1. |
-| `utilidades` | Utilidades | Vacía en el sprint 1. |
 
 El esquema está versionado con Flyway en `src/main/resources/db/migration`:
 
