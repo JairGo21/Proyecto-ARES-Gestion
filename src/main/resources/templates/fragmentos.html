@@ -20,8 +20,9 @@
     <nav class="menu">
         <a th:href="@{/productos}">Inventario</a>
         <a th:href="@{/productos/nuevo}">Nuevo producto</a>
-        <a th:href="@{/entradas/nueva}">Registrar entrada</a>
-        <a th:href="@{/salidas/nueva}">Registrar salida</a>
+        <a th:href="@{/movimientos}">Historial</a>
+        <a class="accion" th:href="@{/entradas/nueva}">Registrar entrada</a>
+        <a class="accion" th:href="@{/salidas/nueva}">Registrar salida</a>
     </nav>
     <form class="sesion" method="post" th:action="@{/sesion/usuario}">
         <label for="usuarioId">Usuario</label>
@@ -33,6 +34,13 @@
         </select>
         <noscript><button type="submit">Cambiar</button></noscript>
     </form>
+    <script>
+        document.querySelectorAll('.menu a').forEach(function (enlace) {
+            if (enlace.pathname === window.location.pathname) {
+                enlace.setAttribute('aria-current', 'page');
+            }
+        });
+    </script>
 </header>
 </body>
 </html>

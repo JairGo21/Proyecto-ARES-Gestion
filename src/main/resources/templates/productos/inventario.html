@@ -23,11 +23,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="p : ${productos}">
+        <tr th:each="p : ${productos}"
+            th:classappend="${p.stockActual == 0} ? 'fila-peligro' : (${p.tieneStockBajo()} ? 'fila-aviso' : '')">
             <td th:text="${p.nombre}">Leche entera 1 L</td>
-            <td th:text="${p.perecedero} ? 'Perecedero' : 'No perecedero'">Perecedero</td>
+            <td><span class="etiqueta neutro" th:text="${p.perecedero} ? 'Perecedero' : 'No perecedero'">Perecedero</span></td>
             <td class="num" th:text="${p.stockActual}">0</td>
-            <td class="num" th:text="${p.cantidadMinima} ?: 'Sin mínimo'">12</td>
+            <td class="num" th:classappend="${p.cantidadMinima == null} ? 'tenue'"
+                th:text="${p.cantidadMinima} ?: 'Sin mínimo'">12</td>
             <td class="num" th:text="${p.perecedero} ? ${p.diasAviso} : '—'">5</td>
             <td>
                 <span class="etiqueta peligro" th:if="${p.stockActual == 0}">Agotado</span>
