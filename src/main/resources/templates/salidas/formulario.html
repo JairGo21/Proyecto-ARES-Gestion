@@ -1,21 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Registrar Salida - ARES</title>
-    <link rel="stylesheet" th:href="@{/css/ares.css}">
-</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Registrar salida')}"></head>
 <body>
-<div th:replace="~{fragmentos :: cabecera}"></div>
+<header th:replace="~{fragmentos :: menu}"></header>
 
-<main class="contenedor">
-    <h2>Registrar Salida de Inventario</h2>
+<main class="contenido">
+    <h1>Registrar salida de inventario</h1>
 
-    <div th:if="${error}" class="alerta error" th:text="${error}"></div>
+    <p class="mensaje-error" role="alert" th:if="${error}" th:text="${error}"></p>
 
-    <form th:action="@{/salidas}" method="post" class="formulario">
-        <div class="campo">
-            <label for="productoId">Producto:</label>
+    <form class="formulario" method="post" th:action="@{/salidas}">
+        <label for="productoId">Producto
             <select id="productoId" name="productoId" required>
                 <option value="">-- Seleccione un producto --</option>
                 <option th:each="p : ${productos}"
@@ -24,32 +19,27 @@
                         th:selected="${p.id == productoSeleccionadoId}">
                 </option>
             </select>
-        </div>
+        </label>
 
-        <div class="campo">
-            <label for="cantidad">Cantidad:</label>
-            <input type="number" id="cantidad" name="cantidad" min="1" required>
-        </div>
+        <label for="cantidad">Cantidad
+            <input id="cantidad" name="cantidad" type="number" min="1" required autocomplete="off">
+        </label>
 
-        <div class="campo">
-            <label for="tipo">Tipo de Salida:</label>
+        <label for="tipo">Tipo de salida
             <select id="tipo" name="tipo" required>
                 <option th:each="t : ${tiposMovimiento}"
                         th:value="${t}"
                         th:text="${t}">
                 </option>
             </select>
-        </div>
+        </label>
 
-        <div class="campo">
-            <label for="motivo">Motivo (obligatorio para Baja por otro motivo):</label>
-            <input type="text" id="motivo" name="motivo" placeholder="Ej. Botella rota, muestra comercial">
-        </div>
+        <label for="motivo">Motivo (obligatorio para Baja por otro motivo)
+            <input id="motivo" name="motivo" type="text" maxlength="255"
+                   placeholder="Ej. Botella rota, muestra comercial" autocomplete="off">
+        </label>
 
-        <div class="acciones">
-            <button type="submit" class="boton primario">Guardar Salida</button>
-            <a th:href="@{/productos}" class="boton secundario">Cancelar</a>
-        </div>
+        <button class="boton" type="submit">Guardar salida</button>
     </form>
 </main>
 </body>
