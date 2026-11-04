@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Registrar entrada')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1>Registrar entrada</h1>
+    <p class="nota">Registra la mercancía que llegó. Se crea un lote y el stock del producto aumenta.</p>
+
+    <p class="mensaje-error" role="alert" th:if="${error}" th:text="${error}"></p>
+
+    <form class="formulario" method="post" th:action="@{/entradas}">
+        <label for="productoId">Producto
+            <select id="productoId" name="productoId" required>
+                <option value="">Selecciona un producto…</option>
+                <option th:each="p : ${productos}"
+                        th:value="${p.id}"
+                        th:text="${p.nombre}"
+                        th:attr="data-perecedero=${p.perecedero}"
+                        th:selected="${productoId != null and p.id == productoId}">Leche entera 1 L</option>
+            </select>
+        </label>
+        <p class="nota">
+            ¿No encuentras el producto?
+            <a th:href="@{/productos/nuevo(volverA='entrada')}">Regístralo como producto nuevo</a>
+            y volverás aquí con el producto elegido.
+        </p>
+
+        <label for="cantidad">Cantidad recibida
+            <input id="cantidad" name="cantidad" type="text" inputmode="numeric"
+                   autocomplete="off" th:value="${cantidad}">
+        </label>
+
+        <label for="fechaVencimiento" id="grupoFecha">Fecha de vencimiento del lote
+            <input id="fechaVencimiento" name="fechaVencimiento" type="date"
+                   th:min="${hoy}" th:value="${fechaVencimiento}">
+            <span class="nota">Obligatoria para productos perecederos.</span>
+        </label>
+
+        <button class="boton" type="submit">Registrar entrada</button>
+    </form>
+</main>
+
+<script>
+    // Solo comodidad: muestra la fecha cuando el producto elegido es perecedero.
+    // La validación real la hace el servidor (Producto.recibirLote).
+    (function () {
+        var producto = document.getElementById('productoId');
+        var grupo = document.getElementById('grupoFecha');
+        var fecha = document.getElementById('fechaVencimiento');
+        function actualizar() {
+            var opcion = producto.options[producto.selectedIndex];
+            var noPerecedero = opcion && opcion.getAttribute('data-perecedero') === 'false';
+            grupo.style.display = noPerecedero ? 'none' : '';
+            fecha.disabled = noPerecedero;
+        }
+        producto.addEventListener('change', actualizar);
+        actualizar();
+    })();
+</script>
+</body>
+</html>

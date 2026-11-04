@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Historial de movimientos')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1>Historial de movimientos</h1>
+    <p class="mensaje-exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
+    <p class="mensaje-error" role="alert" th:if="${error}" th:text="${error}"></p>
+
+    <form class="sesion" method="get" th:action="@{/movimientos}">
+        <label for="productoId">Producto</label>
+        <select id="productoId" name="productoId" onchange="this.form.submit()">
+            <option value="">Selecciona un producto…</option>
+            <option th:each="p : ${productos}"
+                    th:value="${p.id}"
+                    th:text="${p.nombre}"
+                    th:selected="${productoId != null and p.id == productoId}">Leche entera 1 L</option>
+        </select>
+        <noscript><button type="submit">Ver</button></noscript>
+    </form>
+
+    <th:block th:if="${producto != null}">
+        <h2 th:text="${producto.nombre}">Producto</h2>
+        <p class="nota">Stock actual: <strong th:text="${producto.stockActual}">0</strong></p>
+
+        <p th:if="${#lists.isEmpty(movimientos)}">Este producto todavía no tiene movimientos.</p>
+
+        <table class="tabla" th:unless="${#lists.isEmpty(movimientos)}">
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th class="num">Cantidad</th>
+                <th>Lote</th>
+                <th>Vencimiento</th>
+                <th>Registrado por</th>
+                <th>Motivo</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="m : ${movimientos}">
+                <td th:text="${#temporals.format(m.fecha, 'dd/MM/yyyy HH:mm')}">04/11/2026 09:30</td>
+                <td>
+                    <span class="etiqueta ok" th:if="${m.tipo.name() == 'ENTRADA'}" th:text="${m.tipo}">ENTRADA</span>
+                    <span class="etiqueta aviso" th:unless="${m.tipo.name() == 'ENTRADA'}" th:text="${m.tipo}">SALIDA_VENTA</span>
+                </td>
+                <td class="num" th:text="${m.cantidad}">0</td>
+                <td th:text="'#' + ${m.lote.id}">#1</td>
+                <td th:text="${m.lote.fechaVencimiento != null} ? ${#temporals.format(m.lote.fechaVencimiento, 'dd/MM/yyyy')} : '—'">—</td>
+                <td th:text="${m.usuario.nombre}">Usuario</td>
+                <td th:text="${m.motivo} ?: '—'">—</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p><a class="boton" th:href="@{/entradas/nueva(productoId=${producto.id})}">Registrar otra entrada</a></p>
+    </th:block>
+
+    <p class="nota" th:if="${producto == null and error == null}">Elige un producto para ver su historial.</p>
+</main>
+</body>
+</html>
