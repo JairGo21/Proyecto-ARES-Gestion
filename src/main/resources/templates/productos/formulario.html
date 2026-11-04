@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Nuevo producto')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1>Registrar producto</h1>
+    <p class="nota">El producto se registrará sin mínimo. El administrador podrá definirlo después.</p>
+
+    <p class="mensaje-error" role="alert" th:if="${error}" th:text="${error}"></p>
+
+    <section class="formulario" th:if="${productoExistente}">
+        <h2>Este código de barras ya está registrado</h2>
+        <p>Producto existente: <strong th:text="${productoExistente.nombre}">Producto</strong>.</p>
+        <p th:text="${productoExistente.codigoBarras}">Código</p>
+        <p th:text="${productoExistente.perecedero} ? 'Perecedero' : 'No perecedero'">Tipo</p>
+        <a class="boton"
+           th:if="${volverA == 'entrada'}"
+           th:href="@{/entradas/nueva(productoId=${productoExistente.id})}">Usar este producto para la entrada</a>
+        <a class="boton" th:unless="${volverA == 'entrada'}" th:href="@{/productos}">Volver al inventario</a>
+    </section>
+
+    <section class="formulario" th:if="${mostrarConfirmacion}">
+        <h2>Ya existe un producto con este nombre</h2>
+        <p>Si es el mismo producto, no registres un duplicado. Si es otra presentación, confirma para continuar.</p>
+        <ul>
+            <li th:each="coincidencia : ${coincidencias}">
+                <strong th:text="${coincidencia.nombre}">Producto</strong>
+                <span th:text="${coincidencia.codigoBarras} ?: 'Sin código de barras'">Código</span>
+                <span th:text="${coincidencia.perecedero} ? 'Perecedero' : 'No perecedero'">Tipo</span>
+                <a th:if="${volverA == 'entrada'}"
+                   th:href="@{/entradas/nueva(productoId=${coincidencia.id})}">Sí, es este; usarlo</a>
+                <a th:unless="${volverA == 'entrada'}" th:href="@{/productos}">Sí, es este; terminar</a>
+            </li>
+        </ul>
+        <form method="post" th:action="@{/productos}">
+            <input type="hidden" name="nombre" th:value="${nombre}">
+            <input type="hidden" name="codigoBarras" th:value="${codigoBarras}">
+            <input type="hidden" name="perecedero" th:value="${perecedero}">
+            <input type="hidden" name="confirmarOtraPresentacion" value="true">
+            <input type="hidden" name="volverA" th:value="${volverA}">
+            <button class="boton" type="submit">Confirmar otra presentación</button>
+        </form>
+    </section>
+
+    <form class="formulario" method="post" th:action="@{/productos}"
+          th:unless="${productoExistente or mostrarConfirmacion}">
+        <input type="hidden" name="volverA" th:value="${volverA}">
+
+        <label for="nombre">Nombre
+            <input id="nombre" name="nombre" type="text" maxlength="120" required
+                   th:value="${nombre}" autocomplete="off">
+        </label>
+
+        <label for="codigoBarras">Código de barras (opcional)
+            <input id="codigoBarras" name="codigoBarras" type="text" maxlength="64"
+                   th:value="${codigoBarras}" autocomplete="off">
+        </label>
+
+        <fieldset>
+            <legend>¿Es perecedero?</legend>
+            <label>
+                <input type="radio" name="perecedero" value="true" required
+                       th:checked="${perecedero == true}">
+                Sí
+            </label>
+            <label>
+                <input type="radio" name="perecedero" value="false" required
+                       th:checked="${perecedero == false}">
+                No
+            </label>
+        </fieldset>
+
+        <button class="boton" type="submit">Guardar producto</button>
+    </form>
+</main>
+</body>
+</html>
