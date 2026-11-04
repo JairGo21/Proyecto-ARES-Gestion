@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Comparator;
+
 /**
  * Producto que vende la tienda.
  *
@@ -128,4 +132,52 @@ public class Producto {
     public List<Lote> getLotes() {
         return Collections.unmodifiableList(lotes);
     }
+
+/**
+     * Algoritmo de reparto de salida para CU-04:
+     * 1. Filtra los lotes que tienen existencias disponibles.
+     * 2. Si el tipo es SALIDA_VENTA, excluye los lotes vencidos.
+     * 3. Ordena los lotes: primero priorizados, luego fecha de vencimiento más cercana,
+     *    y al final los lotes sin fecha de vencimiento.
+     * 4. Retorna un LinkedHashMap manteniendo el orden del reparto.
+     */
+    public Map<Lote, Integer> repartirSalida(int cantidad, TipoMovimiento tipo) {
+        if (cantidad <= 0) {
+            throw new ReglaNegocioException("La cantidad a registrar debe ser mayor a cero.");
+        }
+
+        List<Lote> candidatos = new ArrayList<>(getLotes().stream()
+                .filter(l -> l.getCantidadDisponible() > 0)
+                .filter(l -> {
+                    if (tipo == TipoMovimiento.SALIDA_VENTA) {
+                        return !l.estaVencido();
+                    }
+                    return true;
+                })
+                .toList());
+
+        int totalDisponible = candidatos.stream().mapToInt(Lote::getCantidadDisponible).sum();
+        if (cantidad > totalDisponible) {
+            throw new ReglaNegocioException("La cantidad solicitada (" + cantidad 
+                    + ") supera la existencia disponible vendible/utilizable (" + totalDisponible + ").");
+        }
+
+        candidatos.sort(Comparator
+                .comparing(Lote::isPriorizado).reversed()
+                .thenComparing(Lote::getFechaVencimiento, Comparator.nullsLast(Comparator.naturalOrder())));
+
+        Map<Lote, Integer> reparto = new LinkedHashMap<>();
+        int restante = cantidad;
+
+        for (Lote lote : candidatos) {
+            if (restante <= 0) {
+                break;
+            }
+            int tomar = Math.min(lote.getCantidadDisponible(), restante);
+            reparto.put(lote, tomar);
+            restante -= tomar;
+        }
+
+        return reparto;
+    }    
 }
