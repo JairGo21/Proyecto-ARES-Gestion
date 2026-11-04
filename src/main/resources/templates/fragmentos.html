@@ -33,6 +33,13 @@
         </select>
         <noscript><button type="submit">Cambiar</button></noscript>
     </form>
+    <script>
+        document.querySelectorAll('.menu a').forEach(function (enlace) {
+            if (enlace.pathname === window.location.pathname) {
+                enlace.setAttribute('aria-current', 'page');
+            }
+        });
+    </script>
 </header>
 </body>
 </html>
