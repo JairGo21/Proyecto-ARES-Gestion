@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Inventario')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1>Inventario</h1>
+    <p class="nota">Stock actual = suma de la cantidad disponible de los lotes de cada producto.</p>
+
+    <p th:if="${#lists.isEmpty(productos)}">No hay productos registrados.</p>
+
+    <table class="tabla" th:unless="${#lists.isEmpty(productos)}">
+        <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Tipo</th>
+            <th class="num">Stock actual</th>
+            <th class="num">Mínimo</th>
+            <th class="num">Días de aviso</th>
+            <th>Estado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${productos}">
+            <td th:text="${p.nombre}">Leche entera 1 L</td>
+            <td th:text="${p.perecedero} ? 'Perecedero' : 'No perecedero'">Perecedero</td>
+            <td class="num" th:text="${p.stockActual}">0</td>
+            <td class="num" th:text="${p.cantidadMinima} ?: 'Sin mínimo'">12</td>
+            <td class="num" th:text="${p.perecedero} ? ${p.diasAviso} : '—'">5</td>
+            <td>
+                <span class="etiqueta peligro" th:if="${p.stockActual == 0}">Agotado</span>
+                <span class="etiqueta aviso" th:if="${p.stockActual > 0 and p.tieneStockBajo()}">Bajo el mínimo</span>
+                <span class="etiqueta ok" th:if="${p.stockActual > 0 and !p.tieneStockBajo()}">Disponible</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

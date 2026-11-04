@@ -1,0 +1,57 @@
+/* Estilos mínimos del sprint 1. Se ajustan cuando se integren los prototipos. */
+
+:root {
+    --fondo: #f6f7f9;
+    --texto: #1f2933;
+    --suave: #616e7c;
+    --borde: #d9dee5;
+    --marca: #1f6f5c;
+    --ok: #2f855a;
+    --aviso: #b7791f;
+    --peligro: #c53030;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+}
+
+.barra {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 24px;
+    background: #fff;
+    border-bottom: 1px solid var(--borde);
+}
+
+.marca { font-weight: 700; font-size: 1.2rem; color: var(--marca); text-decoration: none; }
+.menu { display: flex; gap: 16px; flex: 1; }
+.menu a { color: var(--texto); text-decoration: none; }
+.menu a:hover { color: var(--marca); }
+.sesion { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--suave); }
+
+.contenido { max-width: 1040px; margin: 24px auto; padding: 0 24px; }
+.nota { color: var(--suave); font-size: 0.9rem; }
+
+.tabla { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--borde); }
+.tabla th, .tabla td { padding: 10px 12px; border-bottom: 1px solid var(--borde); text-align: left; }
+.tabla th { font-size: 0.85rem; color: var(--suave); font-weight: 600; }
+.num { text-align: right !important; font-variant-numeric: tabular-nums; }
+
+.etiqueta { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+.etiqueta.ok { color: var(--ok); background: #e6f4ea; }
+.etiqueta.aviso { color: var(--aviso); background: #fdf3e1; }
+.etiqueta.peligro { color: var(--peligro); background: #fde8e8; }
+
+/* Formularios (para CU-07, CU-03 y CU-04) */
+.formulario { display: grid; gap: 16px; max-width: 520px; background: #fff; padding: 24px; border: 1px solid var(--borde); border-radius: 8px; }
+.formulario label { display: grid; gap: 6px; font-weight: 600; }
+.formulario input, .formulario select, .formulario textarea { padding: 8px 10px; border: 1px solid var(--borde); border-radius: 6px; font: inherit; }
+.boton { padding: 10px 16px; border: 0; border-radius: 6px; background: var(--marca); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.mensaje-error { padding: 10px 12px; border-radius: 6px; color: var(--peligro); background: #fde8e8; }
+.mensaje-exito { padding: 10px 12px; border-radius: 6px; color: var(--ok); background: #e6f4ea; }

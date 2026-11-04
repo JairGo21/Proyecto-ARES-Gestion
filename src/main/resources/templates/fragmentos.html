@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+  Partes comunes de todas las páginas. Cada página las incluye así:
+    <head th:replace="~{fragmentos :: cabecera('Título')}"></head>
+    <header th:replace="~{fragmentos :: menu}"></header>
+  Los enlaces de CU-07, CU-03 y CU-04 ya están puestos: así nadie edita estas
+  líneas en su rama y se evitan conflictos al integrar. Dan 404 hasta que el
+  caso de uso correspondiente exista.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:fragment="cabecera(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' · Ares'">Ares</title>
+    <link rel="stylesheet" th:href="@{/css/ares.css}">
+</head>
+<body>
+<header th:fragment="menu" class="barra">
+    <a class="marca" th:href="@{/}">Ares</a>
+    <nav class="menu">
+        <a th:href="@{/productos}">Inventario</a>
+        <a th:href="@{/productos/nuevo}">Nuevo producto</a>
+        <a th:href="@{/entradas/nueva}">Registrar entrada</a>
+        <a th:href="@{/salidas/nueva}">Registrar salida</a>
+    </nav>
+    <form class="sesion" method="post" th:action="@{/sesion/usuario}">
+        <label for="usuarioId">Usuario</label>
+        <select id="usuarioId" name="usuarioId" onchange="this.form.submit()">
+            <option th:each="u : ${usuarios}"
+                    th:value="${u.id}"
+                    th:text="${u.nombre + ' · ' + u.rol}"
+                    th:selected="${usuarioActual != null and u.id == usuarioActual.id}">Usuario</option>
+        </select>
+        <noscript><button type="submit">Cambiar</button></noscript>
+    </form>
+</header>
+</body>
+</html>

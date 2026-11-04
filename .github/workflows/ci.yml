@@ -1,0 +1,26 @@
+# Integración continua: compila y corre todas las pruebas en cada Pull Request
+# y en cada cambio de main. Si este check está en rojo, el PR no se integra.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Compilar y probar
+        run: |
+          chmod +x mvnw
+          ./mvnw -B verify

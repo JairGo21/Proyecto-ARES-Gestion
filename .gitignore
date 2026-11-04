@@ -1,0 +1,26 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Base H2 local (se regenera con Flyway)
+data/
+*.mv.db
+*.trace.db
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Eclipse / VS Code
+.classpath
+.project
+.settings/
+.factorypath
+.vscode/
+bin/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
