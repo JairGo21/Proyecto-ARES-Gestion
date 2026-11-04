@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Registrar salida')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1>Registrar salida de inventario</h1>
+
+    <p class="mensaje-error" role="alert" th:if="${error}" th:text="${error}"></p>
+
+    <form class="formulario" method="post" th:action="@{/salidas}">
+        <label for="productoId">Producto
+            <select id="productoId" name="productoId" required>
+                <option value="">-- Seleccione un producto --</option>
+                <option th:each="p : ${productos}"
+                        th:value="${p.id}"
+                        th:text="${p.nombre + ' (Stock: ' + p.stockActual + ')'}"
+                        th:selected="${p.id == productoSeleccionadoId}">
+                </option>
+            </select>
+        </label>
+
+        <label for="cantidad">Cantidad
+            <input id="cantidad" name="cantidad" type="number" min="1" required autocomplete="off">
+        </label>
+
+        <label for="tipo">Tipo de salida
+            <select id="tipo" name="tipo" required>
+                <option th:each="t : ${tiposMovimiento}"
+                        th:value="${t}"
+                        th:text="${t}">
+                </option>
+            </select>
+        </label>
+
+        <label for="motivo">Motivo (obligatorio para Baja por otro motivo)
+            <input id="motivo" name="motivo" type="text" maxlength="255"
+                   placeholder="Ej. Botella rota, muestra comercial" autocomplete="off">
+        </label>
+
+        <button class="boton" type="submit">Guardar salida</button>
+    </form>
+</main>
+</body>
+</html>
