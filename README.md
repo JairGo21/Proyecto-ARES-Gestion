@@ -24,7 +24,7 @@ Linux o macOS:
 Windows (PowerShell o CMD):
 
 ```bat
-mvnw.cmd spring-boot:run
+./mvnw.cmd spring-boot:run
 ```
 
 Abrir <http://localhost:8080>. El primer arranque crea la base en la carpeta `data/` con el esquema y los datos de prueba.
