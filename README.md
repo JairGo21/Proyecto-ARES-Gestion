@@ -15,6 +15,11 @@ Comprobar: `java -version` debe mostrar 21.
 
 ## Ejecutar la aplicación
 
+Permisos de mvnw:
+```bash
+sudo chmod +x mvnw
+```
+
 Linux o macOS:
 
 ```bash
