@@ -74,6 +74,17 @@ class PersistenciaTest {
     }
 
     @Test
+    void datosDePrueba_lotesTienenIdsConsecutivos() {
+        List<Long> ids = em.createQuery("select l.id from Lote l order by l.id", Long.class)
+                .getResultList();
+
+        assertEquals(14, ids.size());
+        for (int i = 0; i < ids.size(); i++) {
+            assertEquals(i + 1L, ids.get(i));
+        }
+    }
+
+    @Test
     void existePorNombre_noDistingueMayusculas() {
         assertTrue(productoRepository.existePorNombre("leche ENTERA 1 l"));
         assertFalse(productoRepository.existePorNombre("Leche deslactosada"));
@@ -140,5 +151,15 @@ class PersistenciaTest {
         em.clear();
 
         assertEquals(vence, loteRepository.buscarPorId(lote.getId()).orElseThrow().getFechaVencimiento());
+    }
+
+    @Test
+    void lotesNuevos_usanIdsConsecutivosSinReiniciarEnMil() {
+        Producto arroz = productoRepository.buscarPorId(6L).orElseThrow();
+        Lote primero = loteRepository.guardar(new Lote(arroz, 1, null));
+        Lote segundo = loteRepository.guardar(new Lote(arroz, 1, null));
+
+        assertTrue(primero.getId() < 1000L);
+        assertEquals(primero.getId() + 1, segundo.getId());
     }
 }
