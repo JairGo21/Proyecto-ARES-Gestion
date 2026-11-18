@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import ares.utilidades.FechaHoraBogota;
+
 import java.time.LocalDateTime;
 
 /**
@@ -58,7 +60,7 @@ public class Alerta {
         this.producto = producto;
         this.lote = lote;
         this.estado = EstadoAlerta.ABIERTA;
-        this.fechaCreacion = LocalDateTime.now();
+        this.fechaCreacion = FechaHoraBogota.ahora();
     }
 
     /** Alerta PROXIMO_A_VENCER o VENCIDO sobre un lote. */
@@ -88,7 +90,7 @@ public class Alerta {
             return;
         }
         estado = EstadoAlerta.CERRADA;
-        fechaCierre = LocalDateTime.now();
+        fechaCierre = FechaHoraBogota.ahora();
     }
 
     public boolean estaAbierta() {

@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import ares.utilidades.FechaHoraBogota;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -69,6 +71,17 @@ class PersistenciaTest {
     @Test
     void datosDePrueba_hayTresUsuariosUnoPorRol() {
         assertEquals(3, usuarioRepository.listarTodos().size());
+    }
+
+    @Test
+    void datosDePrueba_lotesTienenIdsConsecutivos() {
+        List<Long> ids = em.createQuery("select l.id from Lote l order by l.id", Long.class)
+                .getResultList();
+
+        assertEquals(14, ids.size());
+        for (int i = 0; i < ids.size(); i++) {
+            assertEquals(i + 1L, ids.get(i));
+        }
     }
 
     @Test
@@ -132,11 +145,21 @@ class PersistenciaTest {
     @Test
     void loteNuevo_conFecha_seGuardaConSuFecha() {
         Producto huevos = productoRepository.buscarPorId(4L).orElseThrow();
-        LocalDate vence = LocalDate.now().plusDays(30);
+        LocalDate vence = FechaHoraBogota.hoy().plusDays(30);
         Lote lote = loteRepository.guardar(new Lote(huevos, 30, vence));
         em.flush();
         em.clear();
 
         assertEquals(vence, loteRepository.buscarPorId(lote.getId()).orElseThrow().getFechaVencimiento());
+    }
+
+    @Test
+    void lotesNuevos_usanIdsConsecutivosSinReiniciarEnMil() {
+        Producto arroz = productoRepository.buscarPorId(6L).orElseThrow();
+        Lote primero = loteRepository.guardar(new Lote(arroz, 1, null));
+        Lote segundo = loteRepository.guardar(new Lote(arroz, 1, null));
+
+        assertTrue(primero.getId() < 1000L);
+        assertEquals(primero.getId() + 1, segundo.getId());
     }
 }
