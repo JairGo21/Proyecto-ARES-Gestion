@@ -11,6 +11,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import ares.utilidades.FechaHoraBogota;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -88,7 +90,7 @@ public class Lote {
     }
 
     public boolean estaVencido() {
-        return estaVencido(LocalDate.now());
+        return estaVencido(FechaHoraBogota.hoy());
     }
 
     /** Versión con fecha explícita para poder probar la regla sin depender del reloj. */
@@ -98,7 +100,7 @@ public class Lote {
 
     /** Atributo derivado /diasRestantes. Es null si el lote no tiene fecha de vencimiento. */
     public Integer getDiasRestantes() {
-        return getDiasRestantes(LocalDate.now());
+        return getDiasRestantes(FechaHoraBogota.hoy());
     }
 
     public Integer getDiasRestantes(LocalDate hoy) {

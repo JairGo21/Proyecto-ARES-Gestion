@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import ares.utilidades.FechaHoraBogota;
+
 import java.time.LocalDateTime;
 
 /**
@@ -74,7 +76,7 @@ public class MovimientoInventario {
         this.lote = lote;
         this.usuario = usuario;
         this.motivo = (motivo == null || motivo.isBlank()) ? null : motivo.trim();
-        this.fecha = LocalDateTime.now();
+        this.fecha = FechaHoraBogota.ahora();
     }
 
     /** Atajo para las vistas: el producto del lote afectado. */

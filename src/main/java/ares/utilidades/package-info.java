@@ -1,5 +1,2 @@
-/**
- * Capa Utilidades (abierta): ayudas sin reglas del negocio que cualquier capa puede
- * usar (formatos de fecha, conversiones). Vacía en el sprint 1.
- */
+/** Utilidades compartidas, como el manejo de fecha y hora con la zona de Bogotá. */
 package ares.utilidades;

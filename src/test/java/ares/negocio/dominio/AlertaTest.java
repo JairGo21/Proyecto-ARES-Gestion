@@ -2,7 +2,8 @@ package ares.negocio.dominio;
 
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import ares.utilidades.FechaHoraBogota;
+
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,7 +18,7 @@ class AlertaTest {
 
     @Test
     void deVencimiento_quedaAbiertaYSenalaElLoteYSuProducto() {
-        Lote lote = new Lote(pan, 6, LocalDate.now().plusDays(1));
+        Lote lote = new Lote(pan, 6, FechaHoraBogota.hoy().plusDays(1));
 
         Alerta alerta = Alerta.deVencimiento(TipoAlerta.PROXIMO_A_VENCER, lote);
 
@@ -29,7 +30,7 @@ class AlertaTest {
 
     @Test
     void deVencimiento_conTipoStockMinimo_rechaza() {
-        Lote lote = new Lote(pan, 6, LocalDate.now().plusDays(1));
+        Lote lote = new Lote(pan, 6, FechaHoraBogota.hoy().plusDays(1));
 
         assertThrows(ReglaNegocioException.class, () -> Alerta.deVencimiento(TipoAlerta.STOCK_MINIMO, lote));
     }

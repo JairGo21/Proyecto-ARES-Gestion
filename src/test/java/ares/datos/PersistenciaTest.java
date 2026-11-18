@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import ares.utilidades.FechaHoraBogota;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -132,7 +134,7 @@ class PersistenciaTest {
     @Test
     void loteNuevo_conFecha_seGuardaConSuFecha() {
         Producto huevos = productoRepository.buscarPorId(4L).orElseThrow();
-        LocalDate vence = LocalDate.now().plusDays(30);
+        LocalDate vence = FechaHoraBogota.hoy().plusDays(30);
         Lote lote = loteRepository.guardar(new Lote(huevos, 30, vence));
         em.flush();
         em.clear();

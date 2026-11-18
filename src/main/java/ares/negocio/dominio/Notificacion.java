@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import ares.utilidades.FechaHoraBogota;
+
 import java.time.LocalDateTime;
 
 /** Aviso que recibe un usuario sobre una alerta. */
@@ -56,7 +58,7 @@ public class Notificacion {
         this.alerta = alerta;
         this.titulo = titulo.trim();
         this.mensaje = mensaje == null ? "" : mensaje.trim();
-        this.fechaCreacion = LocalDateTime.now();
+        this.fechaCreacion = FechaHoraBogota.ahora();
         this.leida = false;
     }
 

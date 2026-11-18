@@ -14,6 +14,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import ares.utilidades.FechaHoraBogota;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +84,7 @@ public class SugeridoCompra {
         if (items.isEmpty()) {
             throw new ReglaNegocioException("El pedido debe tener al menos un producto.");
         }
-        this.fecha = LocalDateTime.now();
+        this.fecha = FechaHoraBogota.ahora();
         this.estado = EstadoSugerido.PENDIENTE_RECEPCION;
     }
 
