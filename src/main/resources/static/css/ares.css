@@ -197,3 +197,10 @@ body {
 
 .mensaje-error { padding: 10px 12px; border-radius: 6px; color: var(--peligro); background: #fde8e8; }
 .mensaje-exito { padding: 10px 12px; border-radius: 6px; color: var(--ok); background: #e6f4ea; }
+/* CU-05: componentes independientes para historial de ventas. */
+.cu05-filtros { max-width: none; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: end; }
+.cu05-filtros .boton { min-height: 40px; }
+.cu05-resultados { margin: 24px 0; }
+.cu05-tabla-scroll { overflow-x: auto; margin: 12px 0; }
+.cu05-inline { display: inline-block; margin-left: 10px; }
+@media (max-width: 760px) { .cu05-filtros { grid-template-columns: 1fr; } }
