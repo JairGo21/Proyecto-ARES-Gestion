@@ -2,7 +2,8 @@
 
 ## Alcance
 
-- Unicamente el administrador (selector de usuario simulado del sprint 1).
+- **Regla definitiva del CU-05:** la consulta corresponde al ADMINISTRADOR segun la especificacion.
+- **Excepcion temporal para pruebas:** cualquier usuario del selector simulado puede consultar el historial; el CRUD de temporadas sigue restringido al ADMINISTRADOR. Revertir esta excepcion cuando se implemente la autenticacion/autorizacion real.
 - Historial de ventas semanal de lunes a domingo con filtro de producto y fechas inclusivas.
 - Unidades vendidas obtenidas exclusivamente de `MovimientoInventario` de tipo `SALIDA_VENTA`.
 - Semanas sin ventas visibles con total cero.
@@ -60,4 +61,4 @@ Las pruebas automatizadas añadidas cubren calendario de quincenas, totales por 
 - El umbral de «insuficiente» es menor de dos semanas **con ventas**; no simplemente dos semanas de calendario seleccionadas.
 - La semana se presenta completa aunque la cantidad solo sume operaciones dentro de los dias filtrados.
 - Las temporadas se etiquetan cuando intersectan la semana; no afectan cantidades ni modifican registros de inventario.
-- Esta funcionalidad no implementa autenticacion real: reutiliza el usuario activo simulado del proyecto.
+- Esta funcionalidad no implementa autenticacion real: reutiliza el usuario activo simulado del proyecto. TODO: aplicar permiso de consulta al ADMINISTRADOR cuando exista control de acceso definitivo.
