@@ -37,8 +37,10 @@ public class HistorialVentasController {
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                             LocalDate desde,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                            LocalDate hasta, HttpSession sesion, Model model) {
-        exigirAdministrador(sesion);
+                            LocalDate hasta, Model model) {
+        // TODO permisos reales: restringir consulta al ADMINISTRADOR, segun CU-05.
+        // Acceso abierto temporalmente para probar con el selector de usuarios.
+
         model.addAttribute("productos", service.listarProductos());
         model.addAttribute("productoId", productoId);
         model.addAttribute("desde", desde);
@@ -55,8 +57,9 @@ public class HistorialVentasController {
 
     @GetMapping("/temporadas")
     public String temporadas(@RequestParam(required = false) Long editar,
-                             HttpSession sesion, Model model) {
-        exigirAdministrador(sesion);
+                             Model model) {
+        // Lectura temporalmente habilitada; las operaciones POST siguen restringidas.
+
         model.addAttribute("temporadas", service.listarTemporadas());
         if (editar != null) {
             try {
