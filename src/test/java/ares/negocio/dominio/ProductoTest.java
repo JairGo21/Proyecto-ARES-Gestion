@@ -72,4 +72,31 @@ class ProductoTest {
 
         assertFalse(producto.tieneStockBajo());
     }
+
+    @Test
+    void definirCantidadMinima_valorValido_actualizaElMinimo() {
+        Producto producto = new Producto("Jabón de barra", false, null, 0);
+
+        producto.definirCantidadMinima(8);
+
+        assertEquals(8, producto.getCantidadMinima());
+    }
+
+    @Test
+    void definirCantidadMinima_ceroONegativo_rechazaYConservaAnterior() {
+        Producto producto = new Producto("Arroz 500 g", false, 10, 0);
+
+        assertThrows(ReglaNegocioException.class, () -> producto.definirCantidadMinima(0));
+        assertThrows(ReglaNegocioException.class, () -> producto.definirCantidadMinima(-5));
+        assertEquals(10, producto.getCantidadMinima());
+    }
+
+    @Test
+    void esMinimoMuySuperiorAlConsumo_evaluaUmbralSobreVentasRecientes() {
+        Producto producto = new Producto("Arroz 500 g", false, 10, 0);
+
+        assertFalse(producto.esMinimoMuySuperiorAlConsumo(20, 10));
+        assertTrue(producto.esMinimoMuySuperiorAlConsumo(21, 10));
+        assertFalse(producto.esMinimoMuySuperiorAlConsumo(15, 0));
+    }
 }
