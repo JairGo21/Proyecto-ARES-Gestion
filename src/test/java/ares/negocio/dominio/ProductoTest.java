@@ -2,7 +2,7 @@ package ares.negocio.dominio;
 
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import ares.utilidades.FechaHoraBogota;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,8 +44,8 @@ class ProductoTest {
     @Test
     void stockActual_esLaSumaDeSusLotes() {
         Producto producto = new Producto("Leche entera 1 L", true, 12, 5);
-        new Lote(producto, 8, LocalDate.now().plusDays(3));
-        new Lote(producto, 20, LocalDate.now().plusDays(12));
+        new Lote(producto, 8, FechaHoraBogota.hoy().plusDays(3));
+        new Lote(producto, 20, FechaHoraBogota.hoy().plusDays(12));
 
         assertEquals(28, producto.getStockActual());
     }
