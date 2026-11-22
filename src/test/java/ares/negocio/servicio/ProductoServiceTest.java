@@ -1,7 +1,10 @@
 package ares.negocio.servicio;
 
+import ares.datos.memoria.AlertaRepositoryEnMemoria;
+import ares.datos.memoria.MovimientoRepositoryEnMemoria;
 import ares.datos.memoria.ProductoRepositoryEnMemoria;
 import ares.negocio.dominio.Producto;
+import ares.negocio.dominio.ReglaNegocioException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,21 +13,25 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Prueba unitaria de un servicio con un repositorio en memoria (sin Spring ni base de datos).
- * Es el modelo para las pruebas de EntradaService, SalidaService y registrarProducto.
  */
 class ProductoServiceTest {
 
     private ProductoRepositoryEnMemoria productoRepository;
+    private MovimientoRepositoryEnMemoria movimientoRepository;
+    private AlertaRepositoryEnMemoria alertaRepository;
     private ProductoService productoService;
 
     @BeforeEach
     void preparar() {
         productoRepository = new ProductoRepositoryEnMemoria();
-        productoService = new ProductoService(productoRepository);
+        movimientoRepository = new MovimientoRepositoryEnMemoria();
+        alertaRepository = new AlertaRepositoryEnMemoria();
+        productoService = new ProductoService(productoRepository, movimientoRepository, alertaRepository);
     }
 
     @Test
@@ -102,5 +109,25 @@ class ProductoServiceTest {
 
         assertEquals(ResultadoRegistroProducto.Estado.CONFIRMAR_OTRA_PRESENTACION, resultado.estado());
         assertEquals(1, productoRepository.todos().size());
+    }
+
+    @Test
+    void definirCantidadMinima_sinConsumoReciente_guardaEIndicaSinConsumo() {
+        productoRepository.guardar(new Producto("Jabón de barra", false, null, 0));
+
+        ResultadoDefinirMinimo resultado = productoService.definirCantidadMinima(1L, 6, false);
+
+        assertEquals(ResultadoDefinirMinimo.Estado.GUARDADO, resultado.estado());
+        assertTrue(resultado.sinConsumoReciente());
+        assertEquals(6, resultado.producto().getCantidadMinima());
+    }
+
+    @Test
+    void definirCantidadMinima_valorInvalido_rechazaYConservaAnterior() {
+        Producto arroz = productoRepository.guardar(new Producto("Arroz 500 g", false, 10, 0));
+
+        assertThrows(ReglaNegocioException.class,
+                () -> productoService.definirCantidadMinima(1L, 0, false));
+        assertEquals(10, arroz.getCantidadMinima());
     }
 }

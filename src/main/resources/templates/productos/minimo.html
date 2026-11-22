@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Cantidad mínima')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1 th:text="${producto.cantidadMinima == null} ? 'Definir cantidad mínima' : 'Editar cantidad mínima'">Definir cantidad mínima</h1>
+    <p class="nota">Establece el nivel mínimo de inventario para generar alertas y sugeridos de compra.</p>
+
+    <p class="mensaje-error" role="alert" th:if="${error}" th:text="${error}"></p>
+
+    <section class="ficha-producto">
+        <div class="ficha-cabecera">
+            <h2 th:text="${producto.nombre}">Producto</h2>
+            <span class="etiqueta neutro" th:text="${producto.perecedero} ? 'Perecedero' : 'No perecedero'">Perecedero</span>
+        </div>
+
+        <dl class="ficha-datos">
+            <div class="ficha-fila">
+                <dt>Stock actual</dt>
+                <dd th:text="${producto.stockActual} + ' unidades'">0 unidades</dd>
+            </div>
+            <div class="ficha-fila">
+                <dt>Cantidad mínima actual</dt>
+                <dd th:classappend="${producto.cantidadMinima == null} ? 'tenue'"
+                    th:text="${producto.cantidadMinima != null} ? ${producto.cantidadMinima} + ' unidades' : 'Sin mínimo'">Sin mínimo</dd>
+            </div>
+            <div class="ficha-fila" th:unless="${sinConsumoReciente}">
+                <dt>Consumo reciente (últimos 30 días)</dt>
+                <dd th:text="${consumoReciente} + ' unidades vendidas'">0 unidades vendidas</dd>
+            </div>
+        </dl>
+
+        <p class="ficha-nota" th:if="${sinConsumoReciente}">
+            Este producto aún no tiene consumo reciente registrado; no es posible comparar el nuevo mínimo con las ventas.
+        </p>
+    </section>
+
+    <section class="panel-aviso" th:if="${mostrarAdvertenciaSobrecompra}">
+        <h2>Advertencia de posible sobrecompra</h2>
+        <p>
+            La cantidad mínima ingresada (<strong th:text="${cantidadMinima}">0</strong> unidades)
+            es muy superior al consumo reciente de los últimos 30 días
+            (<strong th:text="${consumoReciente}">0</strong> unidades).
+        </p>
+        <p class="nota">
+            ¿Deseas confirmar este mínimo de todas formas o prefieres corregir el valor?
+        </p>
+
+        <div class="grupo-botones">
+            <form method="post" th:action="@{/productos/{id}/minimo(id=${producto.id})}">
+                <input type="hidden" name="cantidadMinima" th:value="${cantidadMinima}">
+                <input type="hidden" name="confirmarAdvertencia" value="true">
+                <button class="boton" type="submit">Confirmar y guardar mínimo</button>
+            </form>
+
+            <a class="boton-secundario" th:href="@{/productos/{id}/minimo(id=${producto.id})}">Corregir valor</a>
+        </div>
+    </section>
+
+    <form class="formulario" method="post"
+          th:action="@{/productos/{id}/minimo(id=${producto.id})}"
+          th:unless="${mostrarAdvertenciaSobrecompra}">
+        <label for="cantidadMinima">Nueva cantidad mínima
+            <input id="cantidadMinima" name="cantidadMinima" type="text" inputmode="numeric"
+                   autocomplete="off" required th:value="${cantidadMinima}">
+        </label>
+
+        <div class="grupo-botones">
+            <button class="boton" type="submit">Guardar cantidad mínima</button>
+            <a class="boton-secundario" th:href="@{/productos}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

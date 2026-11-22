@@ -8,16 +8,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Producto que vende la tienda.
@@ -29,6 +27,9 @@ import java.util.Comparator;
 @Entity
 @Table(name = "producto")
 public class Producto {
+
+    /** Factor sobre el consumo reciente a partir del cual se advierte posible sobrecompra (CU-06-HU-02). */
+    public static final int FACTOR_ADVERTENCIA_CONSUMO = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,12 +55,9 @@ public class Producto {
     @Column(name = "activo", nullable = false)
     private boolean activo;
 
-
     /** Producto 1 --tiene-- 0..* Lote. El lote tiene repositorio propio. */
     @OneToMany(mappedBy = "producto")
     private List<Lote> lotes = new ArrayList<>();
-
-
 
     /** Constructor vacío que exige JPA. No usarlo en el código del negocio. */
     protected Producto() {
@@ -89,7 +87,6 @@ public class Producto {
         this.activo = true;
     }
 
-    
     /**
      * Atributo derivado /stockActual: la suma de la cantidad disponible de sus lotes.
      * No es columna de la base de datos.
@@ -103,7 +100,27 @@ public class Producto {
         return cantidadMinima != null && getStockActual() <= cantidadMinima;
     }
 
+    /**
+     * Regla central de CU-06 (CU-06-HU-01): establece o actualiza la cantidad mínima del producto.
+     * Rechaza valores nulos, cero o negativos sin alterar el mínimo anterior.
+     */
+    public void definirCantidadMinima(Integer nuevaCantidadMinima) {
+        if (nuevaCantidadMinima == null || nuevaCantidadMinima <= 0) {
+            throw new ReglaNegocioException("La cantidad mínima debe ser un número entero mayor que cero.");
+        }
+        this.cantidadMinima = nuevaCantidadMinima;
+    }
 
+    /**
+     * Regla de CU-06 (CU-06-HU-02): advierte cuando existe historial de consumo reciente
+     * y el nuevo mínimo supera el doble de dicho consumo.
+     */
+    public boolean esMinimoMuySuperiorAlConsumo(int nuevoMinimo, int consumoReciente) {
+        if (consumoReciente <= 0) {
+            return false;
+        }
+        return nuevoMinimo > consumoReciente * FACTOR_ADVERTENCIA_CONSUMO;
+    }
 
     /**
      * Regla central de CU-03 (registrar entrada): el producto recibe mercancía y crea un lote.
@@ -139,7 +156,6 @@ public class Producto {
         }
         return new Lote(this, cantidad, fechaDelLote);
     }
-
 
     /** Lo llama el constructor de Lote para que el producto conozca su nuevo lote. */
     void agregarLote(Lote lote) {
@@ -178,7 +194,7 @@ public class Producto {
         return Collections.unmodifiableList(lotes);
     }
 
-/**
+    /**
      * Algoritmo de reparto de salida para CU-04:
      * 1. Filtra los lotes que tienen existencias disponibles.
      * 2. Si el tipo es SALIDA_VENTA, excluye los lotes vencidos.
@@ -203,7 +219,7 @@ public class Producto {
 
         int totalDisponible = candidatos.stream().mapToInt(Lote::getCantidadDisponible).sum();
         if (cantidad > totalDisponible) {
-            throw new ReglaNegocioException("La cantidad solicitada (" + cantidad 
+            throw new ReglaNegocioException("La cantidad solicitada (" + cantidad
                     + ") supera la existencia disponible vendible/utilizable (" + totalDisponible + ").");
         }
 
@@ -224,5 +240,5 @@ public class Producto {
         }
 
         return reparto;
-    }    
+    }
 }

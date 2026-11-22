@@ -1,4 +1,4 @@
-/* Estilos mínimos del sprint 1. Se ajustan cuando se integren los prototipos. */
+/* Estilos de Ares. Mantiene la paleta verde bosque (#1f6f5c / #174f42) y superficies limpias. */
 
 :root {
     --fondo: #f6f7f9;
@@ -6,6 +6,7 @@
     --suave: #616e7c;
     --borde: #d9dee5;
     --marca: #1f6f5c;
+    --marca-suave: #eef6f4;
     --barra: #174f42;
     --ok: #2f855a;
     --aviso: #b7791f;
@@ -65,6 +66,7 @@ body {
 .tabla tr.fila-aviso:hover td { background: #fdf3e1; }
 .tabla tr.fila-peligro:hover td { background: #fde8e8; }
 .num { text-align: right !important; font-variant-numeric: tabular-nums; }
+.col-acciones { white-space: nowrap; }
 
 .etiqueta { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
 .etiqueta.ok { color: var(--ok); background: #e6f4ea; }
@@ -72,14 +74,126 @@ body {
 .etiqueta.peligro { color: var(--peligro); background: #fde8e8; }
 .etiqueta.neutro { color: var(--suave); background: #eef1f4; }
 
-/* Formularios (para CU-07, CU-03 y CU-04) */
+/* Botones de acción en tablas (CU-06) */
+.accion-tabla {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 6px;
+    font-size: 0.83rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    color: var(--marca);
+    background: #fff;
+    border: 1px solid var(--borde);
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.accion-tabla:hover {
+    background: var(--marca-suave);
+    border-color: var(--marca);
+    color: var(--barra);
+}
+.accion-tabla.destacada {
+    background: var(--marca-suave);
+    border-color: rgba(31, 111, 92, 0.4);
+    color: var(--marca);
+}
+.accion-tabla.destacada:hover {
+    background: var(--marca);
+    border-color: var(--marca);
+    color: #fff;
+}
+.accion-tabla:focus-visible {
+    outline: 2px solid var(--marca);
+    outline-offset: 2px;
+}
+
+/* Formularios y tarjetas (CU-06, CU-07, CU-03 y CU-04) */
 .formulario { display: grid; gap: 16px; max-width: 520px; background: #fff; padding: 24px; border: 1px solid var(--borde); border-radius: 8px; }
 .formulario label { display: grid; gap: 6px; font-weight: 600; }
 .formulario input, .formulario select, .formulario textarea { padding: 8px 10px; border: 1px solid var(--borde); border-radius: 6px; font: inherit; }
+.formulario input:focus, .formulario select:focus, .formulario textarea:focus {
+    outline: none;
+    border-color: var(--marca);
+    box-shadow: 0 0 0 3px rgba(31, 111, 92, 0.14);
+}
 .formulario fieldset { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 10px 14px 14px; border: 1px solid var(--borde); border-radius: 6px; }
 .formulario legend { padding: 0 6px; font-weight: 600; }
 .formulario fieldset label { display: flex; align-items: center; gap: 8px; font-weight: 400; }
 .formulario input[type="radio"] { width: 1rem; height: 1rem; margin: 0; padding: 0; accent-color: var(--marca); }
-.boton { padding: 10px 16px; border: 0; border-radius: 6px; background: var(--marca); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+
+.boton {
+    display: inline-block;
+    padding: 10px 16px;
+    border: 1px solid var(--marca);
+    border-radius: 6px;
+    background: var(--marca);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.boton:hover { background: var(--barra); border-color: var(--barra); }
+.boton:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; }
+
+.boton-secundario {
+    display: inline-block;
+    padding: 10px 16px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--texto);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.boton-secundario:hover { background: #f1f5f9; border-color: #bcc5d1; }
+.boton-secundario:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; }
+
+.grupo-botones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+.ficha-producto {
+    max-width: 520px;
+    margin-bottom: 16px;
+    padding: 20px 24px;
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+}
+.ficha-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+}
+.ficha-cabecera h2 { margin: 0; font-size: 1.15rem; }
+.ficha-datos { display: grid; gap: 8px; margin: 0; }
+.ficha-fila { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-size: 0.95rem; }
+.ficha-fila dt { color: var(--suave); }
+.ficha-fila dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ficha-nota { margin: 12px 0 0; padding-top: 10px; border-top: 1px dashed var(--borde); color: var(--suave); font-size: 0.88rem; }
+
+.panel-aviso {
+    display: grid;
+    gap: 14px;
+    max-width: 520px;
+    padding: 20px 24px;
+    background: #fffaf0;
+    border: 1px solid #e6c88a;
+    border-left: 4px solid var(--aviso);
+    border-radius: 8px;
+}
+.panel-aviso h2 { margin: 0; font-size: 1.05rem; color: var(--aviso); }
+.panel-aviso p { margin: 0; line-height: 1.45; }
+
 .mensaje-error { padding: 10px 12px; border-radius: 6px; color: var(--peligro); background: #fde8e8; }
 .mensaje-exito { padding: 10px 12px; border-radius: 6px; color: var(--ok); background: #e6f4ea; }
