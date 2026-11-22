@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Historial de ventas')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+<main class="contenido">
+    <h1>Historial de ventas por producto</h1>
+    <p class="nota">CU-05 · Consulta de solo lectura. Las bajas de inventario no cuentan como ventas.</p>
+    <form th:action="@{/ventas/historial}" method="get" class="formulario cu05-filtros">
+        <label for="productoId">Producto
+            <select id="productoId" name="productoId" required>
+                <option value="">Selecciona un producto</option>
+                <option th:each="p : ${productos}" th:value="${p.id}"
+                        th:text="${p.nombre}" th:selected="${productoId == p.id}">Producto</option>
+            </select>
+        </label>
+        <label for="desde">Desde
+            <input id="desde" type="date" name="desde" th:value="${desde}" required>
+        </label>
+        <label for="hasta">Hasta
+            <input id="hasta" type="date" name="hasta" th:value="${hasta}" required>
+        </label>
+        <button class="boton" type="submit">Consultar ventas</button>
+    </form>
+    <p th:if="${error != null}" class="mensaje-error" th:text="${error}"></p>
+    <section th:if="${resultado != null}" class="cu05-resultados">
+        <h2 th:text="'Ventas de ' + ${resultado.producto.nombre}">Ventas del producto</h2>
+        <p><strong>Total vendido:</strong> <span th:text="${resultado.total}">0</span> unidades</p>
+        <p th:if="${resultado.total == 0}" class="mensaje-error">
+            Sin ventas registradas. Puedes ampliar el rango de fechas para consultar más información.
+        </p>
+        <p th:if="${resultado.insuficiente}" class="etiqueta aviso">
+            Historial insuficiente: menos de dos semanas con ventas registradas.
+        </p>
+        <p th:if="${resultado.sinTemporadasDefinidas}" class="nota">
+            No hay temporadas altas definidas. Se identifican únicamente semanas de quincena.
+        </p>
+        <div class="cu05-tabla-scroll">
+            <table class="tabla">
+                <thead><tr>
+                    <th>Semana (lunes a domingo)</th>
+                    <th class="num">Unidades vendidas</th>
+                    <th>Quincena</th>
+                    <th>Temporadas altas</th>
+                </tr></thead>
+                <tbody>
+                    <tr th:each="semana : ${resultado.semanas}">
+                        <td th:text="${#temporals.format(semana.inicio, 'dd/MM/yyyy') + ' – ' + #temporals.format(semana.fin, 'dd/MM/yyyy')}">Semana</td>
+                        <td class="num" th:text="${semana.cantidad}">0</td>
+                        <td><span th:if="${semana.quincena}" class="etiqueta aviso">Quincena</span>
+                            <span th:unless="${semana.quincena}" class="tenue">—</span></td>
+                        <td>
+                            <span th:if="${#lists.isEmpty(semana.temporadas)}" class="tenue">—</span>
+                            <span th:each="t : ${semana.temporadas}" class="etiqueta ok" th:text="${t}">Temporada</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="tenue">Las semanas se presentan completas para facilitar la comparación; solo se suman ventas realizadas dentro del rango consultado.</p>
+    </section>
+    <p><a th:href="@{/ventas/temporadas}">Administrar temporadas altas</a></p>
+</main>
+</body>
+</html>
