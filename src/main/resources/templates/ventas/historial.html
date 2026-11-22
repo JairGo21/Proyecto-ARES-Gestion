@@ -59,7 +59,7 @@
         </div>
         <p class="tenue">Las semanas se presentan completas para facilitar la comparación; solo se suman ventas realizadas dentro del rango consultado.</p>
     </section>
-    <p><a th:href="@{/ventas/temporadas}">Administrar temporadas altas</a></p>
+    <p th:if="${usuarioActual != null and usuarioActual.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/ventas/temporadas}">Administrar temporadas altas</a></p>
 </main>
 </body>
 </html>
