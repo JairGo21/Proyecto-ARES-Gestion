@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Temporadas altas')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+<main class="contenido">
+    <h1>Temporadas altas</h1>
+    <p class="nota">CU-05 · Define periodos que se marcarán en el historial semanal de ventas.</p>
+    <p th:if="${error != null}" class="mensaje-error" th:text="${error}"></p>
+    <p th:if="${mensajeExito != null}" class="mensaje-exito" th:text="${mensajeExito}"></p>
+    <h2 th:text="${edicion != null ? 'Editar temporada' : 'Nueva temporada'}">Nueva temporada</h2>
+    <form th:action="@{/ventas/temporadas}" method="post" class="formulario">
+        <input th:if="${edicion != null}" type="hidden" name="id" th:value="${edicion.id}">
+        <label for="nombre">Nombre
+            <input id="nombre" type="text" name="nombre" maxlength="120" required
+                   th:value="${edicion != null ? edicion.nombre : ''}" placeholder="Ej.: Navidad">
+        </label>
+        <label for="fechaInicio">Fecha inicial
+            <input id="fechaInicio" type="date" name="fechaInicio" required
+                   th:value="${edicion != null ? edicion.fechaInicio : ''}">
+        </label>
+        <label for="fechaFin">Fecha final
+            <input id="fechaFin" type="date" name="fechaFin" required
+                   th:value="${edicion != null ? edicion.fechaFin : ''}">
+        </label>
+        <button class="boton" type="submit">Guardar temporada</button>
+        <a th:if="${edicion != null}" th:href="@{/ventas/temporadas}">Cancelar edición</a>
+    </form>
+    <h2>Periodos configurados</h2>
+    <p th:if="${#lists.isEmpty(temporadas)}" class="nota">No hay temporadas altas definidas.</p>
+    <div th:unless="${#lists.isEmpty(temporadas)}" class="cu05-tabla-scroll">
+        <table class="tabla">
+            <thead><tr><th>Nombre</th><th>Desde</th><th>Hasta</th><th>Acciones</th></tr></thead>
+            <tbody>
+                <tr th:each="t : ${temporadas}">
+                    <td th:text="${t.nombre}"></td>
+                    <td th:text="${#temporals.format(t.fechaInicio, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(t.fechaFin, 'dd/MM/yyyy')}"></td>
+                    <td>
+                        <a th:href="@{/ventas/temporadas(editar=${t.id})}">Editar</a>
+                        <form th:action="@{/ventas/temporadas/{id}/eliminar(id=${t.id})}" method="post" class="cu05-inline"
+                              onsubmit="return confirm('¿Eliminar esta temporada?');">
+                            <button type="submit">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <p><a th:href="@{/ventas/historial}">Volver al historial de ventas</a></p>
+</main>
+</body>
+</html>
