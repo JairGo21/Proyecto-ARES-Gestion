@@ -35,6 +35,34 @@ public class ProductoRepositoryEnMemoria implements ProductoRepository {
     }
 
     @Override
+    public List<Producto> bajoMinimo() {
+        return listarActivos().stream()
+                .filter(p -> p.getCantidadMinima() != null)
+                .filter(Producto::tieneStockBajo)
+                .toList();
+    }
+
+    @Override
+    public List<Producto> sinMinimo() {
+        return listarActivos().stream()
+                .filter(p -> p.getCantidadMinima() == null)
+                .toList();
+    }
+
+    @Override
+    public List<Producto> buscarPorIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return ids.stream()
+                .distinct()
+                .map(productos::get)
+                .filter(java.util.Objects::nonNull)
+                .sorted(Comparator.comparing(Producto::getNombre))
+                .toList();
+    }
+
+    @Override
     public List<Producto> buscarPorNombre(String texto) {
         String buscado = texto == null ? "" : texto.trim().toLowerCase();
         return listarActivos().stream()
@@ -71,7 +99,9 @@ public class ProductoRepositoryEnMemoria implements ProductoRepository {
     @Override
     public Producto guardar(Producto producto) {
         if (!productos.containsValue(producto)) {
-            productos.put(siguienteId++, producto);
+            Long id = siguienteId++;
+            DatosDePrueba.asignarId(producto, id);
+            productos.put(id, producto);
         }
         return producto;
     }

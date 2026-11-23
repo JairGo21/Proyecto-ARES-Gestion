@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Sugerido de compra')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1>Sugerido de compra</h1>
+    <p class="nota">CU-02 · El sistema propone qué comprar; nada se guarda hasta que el administrador confirma.</p>
+
+    <p class="mensaje-exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
+    <p class="mensaje-error" role="alert" th:if="${error}" th:text="${error}"></p>
+
+    <!-- Extensión 4b: cantidades muy superiores a la sugerida -->
+    <div class="cu02-aviso-exceso" role="alert" th:unless="${#lists.isEmpty(productosEnExceso)}">
+        <p><strong>Revisa estas cantidades antes de confirmar.</strong>
+            Pediste mucho más de lo sugerido en:
+            <span th:each="nombre, i : ${productosEnExceso}"
+                  th:text="${nombre} + (${i.last} ? '.' : ', ')">Producto</span>
+        </p>
+        <p class="tenue">Si es lo que quieres, vuelve a pulsar «Confirmar pedido» para aceptarlo.</p>
+    </div>
+
+    <!-- Paso 2: el calendario que explica el ajuste de la demanda -->
+    <section class="cu02-semana">
+        <p>
+            <strong>Semana del</strong>
+            <span th:text="${#temporals.format(semana.inicio, 'dd/MM/yyyy')}">01/01/2026</span>
+            al
+            <span th:text="${#temporals.format(semana.fin, 'dd/MM/yyyy')}">07/01/2026</span>
+        </p>
+        <p class="cu02-etiquetas">
+            <span class="etiqueta aviso" th:if="${semana.quincena}">Semana de quincena</span>
+            <span class="etiqueta ok" th:each="t : ${semana.temporadas}" th:text="${t}">Temporada</span>
+            <span class="etiqueta neutro" th:if="${semana.demandaNormal()}">Semana normal</span>
+        </p>
+        <p class="tenue" th:if="${semana.incrementoPorcentual > 0}">
+            Las cantidades sugeridas suben un
+            <span th:text="${semana.incrementoPorcentual}">50</span>% por la demanda esperada.
+        </p>
+        <p class="tenue" th:if="${semana.sinTemporadasDefinidas}">
+            No hay temporadas altas definidas: solo se aplica la regla de quincena.
+            <a th:href="@{/ventas/temporadas}">Configurar temporadas</a>.
+        </p>
+    </section>
+
+    <!-- Extensión 2a: ningún producto está bajo el mínimo -->
+    <p class="cu02-vacio" th:if="${sinProductosBajoMinimo}">
+        Ningún producto está en o bajo su mínimo. Puedes buscar productos y agregarlos a mano.
+    </p>
+
+    <form th:action="@{/sugeridos/confirmar}" method="post" th:unless="${#lists.isEmpty(filas)}">
+        <input type="hidden" name="aceptaExceso" th:value="${aceptaExceso}">
+        <table class="tabla">
+            <thead>
+            <tr>
+                <th>Producto</th>
+                <th class="num">Stock</th>
+                <th class="num">Mínimo</th>
+                <th class="num">Consumo 30 días</th>
+                <th class="num">Sugerido</th>
+                <th class="num">Cantidad a pedir</th>
+                <th>Historial</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="fila : ${filas}">
+                <td>
+                    <span th:text="${fila.nombre}">Arroz 500 g</span>
+                    <input type="hidden" name="productoId" th:value="${fila.productoId}">
+                    <input type="hidden" name="cantidadSugerida" th:value="${fila.cantidadSugerida}">
+                    <span class="etiqueta neutro" th:if="${fila.sinMinimo()}">Sin mínimo</span>
+                </td>
+                <td class="num" th:text="${fila.stockActual}">7</td>
+                <td class="num" th:classappend="${fila.sinMinimo()} ? 'tenue'"
+                    th:text="${fila.cantidadMinima} ?: '—'">10</td>
+                <td class="num">
+                    <span th:text="${fila.consumoReciente}">23</span>
+                    <!-- Extensión 2c: sin historial se sugiere solo con el mínimo -->
+                    <span class="etiqueta aviso" th:if="${fila.sinHistorial()}">Sin historial</span>
+                </td>
+                <td class="num" th:text="${fila.cantidadSugerida}">18</td>
+                <td class="num">
+                    <label class="cu02-oculto" th:for="'cantidad-' + ${fila.productoId}"
+                           th:text="'Cantidad a pedir de ' + ${fila.nombre}">Cantidad</label>
+                    <input class="cu02-cantidad" type="number" min="0" step="1"
+                           th:id="'cantidad-' + ${fila.productoId}"
+                           name="cantidadConfirmada"
+                           th:value="${fila.cantidadConfirmada}">
+                </td>
+                <td>
+                    <a class="accion-tabla"
+                       th:href="@{/ventas/historial(productoId=${fila.productoId})}">Ver ventas</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p class="tenue">Deja una cantidad en cero para no pedir ese producto.</p>
+        <div class="grupo-botones">
+            <button class="boton" type="submit">Confirmar pedido</button>
+            <a class="boton-secundario" th:href="@{/sugeridos}">Descartar y volver a calcular</a>
+        </div>
+    </form>
+
+    <!-- Paso 4: agregar productos a mano -->
+    <section class="cu02-bloque">
+        <h2>Agregar productos al pedido</h2>
+        <form th:action="@{/sugeridos}" method="get" class="formulario cu02-busqueda">
+            <label for="texto">Buscar por nombre
+                <input id="texto" type="text" name="texto" th:value="${texto}"
+                       placeholder="Por ejemplo: arroz">
+            </label>
+            <input type="hidden" name="agregar" th:each="id : ${idsActuales}" th:value="${id}">
+            <button class="boton-secundario" type="submit">Buscar</button>
+        </form>
+
+        <p class="tenue" th:if="${texto != null and !texto.isBlank() and #lists.isEmpty(resultadosBusqueda)}">
+            No hay otros productos activos que coincidan con
+            «<span th:text="${texto}">arroz</span>».
+        </p>
+
+        <table class="tabla" th:unless="${#lists.isEmpty(resultadosBusqueda)}">
+            <thead>
+            <tr>
+                <th>Producto</th>
+                <th class="num">Stock</th>
+                <th class="num">Mínimo</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${resultadosBusqueda}">
+                <td th:text="${p.nombre}">Arroz 500 g</td>
+                <td class="num" th:text="${p.stockActual}">7</td>
+                <td class="num" th:text="${p.cantidadMinima} ?: 'Sin mínimo'">10</td>
+                <td>
+                    <form th:action="@{/sugeridos}" method="get">
+                        <input type="hidden" name="texto" th:value="${texto}">
+                        <input type="hidden" name="agregar" th:each="id : ${idsActuales}" th:value="${id}">
+                        <input type="hidden" name="agregar" th:value="${p.id}">
+                        <button class="accion-tabla destacada" type="submit">Agregar al pedido</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Extensión 2b: productos sin mínimo definido -->
+    <section class="cu02-bloque" th:unless="${#lists.isEmpty(sinMinimo)}">
+        <h2>Productos sin cantidad mínima</h2>
+        <p class="nota">
+            Estos productos no entran en el cálculo automático. Defíneles un mínimo (CU-06)
+            o agrégalos a mano con el buscador de arriba.
+        </p>
+        <table class="tabla">
+            <thead>
+            <tr>
+                <th>Producto</th>
+                <th class="num">Stock</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${sinMinimo}">
+                <td th:text="${p.nombre}">Jabón de barra</td>
+                <td class="num" th:text="${p.stockActual}">9</td>
+                <td>
+                    <a class="accion-tabla destacada"
+                       th:href="@{/productos/{id}/minimo(id=${p.id})}">Definir mínimo</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <p><a th:href="@{/sugeridos/pedidos}">Ver pedidos confirmados</a></p>
+</main>
+</body>
+</html>

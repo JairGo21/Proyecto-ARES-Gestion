@@ -33,11 +33,49 @@ public class ProductoRepositoryJpa implements ProductoRepository {
                 .getResultList();
     }
 
+    /**
+     * CU-02 paso 2. El stock es derivado (suma de los lotes), así que se calcula con una
+     * subconsulta en vez de leer una columna. Equivale a Producto.tieneStockBajo().
+     */
+    @Override
+    public List<Producto> bajoMinimo() {
+        return em.createQuery(
+                        "select distinct p from Producto p left join fetch p.lotes "
+                                + "where p.activo = true and p.cantidadMinima is not null "
+                                + "and (select coalesce(sum(l.cantidadDisponible), 0) from Lote l "
+                                + "     where l.producto = p) <= p.cantidadMinima "
+                                + "order by p.nombre", Producto.class)
+                .getResultList();
+    }
+
+    @Override
+    public List<Producto> sinMinimo() {
+        return em.createQuery(
+                        "select distinct p from Producto p left join fetch p.lotes "
+                                + "where p.activo = true and p.cantidadMinima is null "
+                                + "order by p.nombre", Producto.class)
+                .getResultList();
+    }
+
+    @Override
+    public List<Producto> buscarPorIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return em.createQuery(
+                        "select distinct p from Producto p left join fetch p.lotes "
+                                + "where p.id in :ids order by p.nombre", Producto.class)
+                .setParameter("ids", ids)
+                .getResultList();
+    }
+
+    /** Trae los lotes porque quien busca un producto necesita ver su stock (CU-02, paso 4). */
     @Override
     public List<Producto> buscarPorNombre(String texto) {
         String patron = "%" + (texto == null ? "" : texto.trim().toLowerCase()) + "%";
         return em.createQuery(
-                        "select p from Producto p where p.activo = true "
+                        "select distinct p from Producto p left join fetch p.lotes "
+                                + "where p.activo = true "
                                 + "and lower(p.nombre) like :patron order by p.nombre", Producto.class)
                 .setParameter("patron", patron)
                 .getResultList();

@@ -15,8 +15,10 @@ public class UsuarioRepositoryEnMemoria implements UsuarioRepository {
     private long siguienteId = 1;
 
     public Long agregar(Usuario usuario) {
-        usuarios.put(siguienteId, usuario);
-        return siguienteId++;
+        Long id = siguienteId++;
+        DatosDePrueba.asignarId(usuario, id);
+        usuarios.put(id, usuario);
+        return id;
     }
 
     @Override

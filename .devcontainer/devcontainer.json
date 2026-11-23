@@ -1,0 +1,19 @@
+{
+  "name": "Ares · Java 21",
+  "image": "mcr.microsoft.com/devcontainers/java:21",
+  "postCreateCommand": "chmod +x mvnw",
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Ares",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack"
+      ]
+    }
+  }
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Pedido sugerido')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1>Pedido confirmado</h1>
+    <p class="mensaje-exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
+
+    <section class="ficha-producto">
+        <div class="ficha-cabecera">
+            <h2 th:text="'Pedido #' + ${pedido.id}">Pedido #1</h2>
+            <span class="etiqueta aviso" th:text="${pedido.estado}">PENDIENTE_RECEPCION</span>
+        </div>
+        <dl class="ficha-datos">
+            <div class="ficha-fila">
+                <dt>Fecha</dt>
+                <dd th:text="${#temporals.format(pedido.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</dd>
+            </div>
+            <div class="ficha-fila">
+                <dt>Confirmado por</dt>
+                <dd th:text="${pedido.usuario.nombre}">Freddy Herrera</dd>
+            </div>
+        </dl>
+    </section>
+
+    <table class="tabla">
+        <thead>
+        <tr>
+            <th>Producto</th>
+            <th class="num">Sugerido</th>
+            <th class="num">Confirmado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${pedido.items}">
+            <td th:text="${item.producto.nombre}">Arroz 500 g</td>
+            <td class="num" th:text="${item.cantidadSugerida}">18</td>
+            <td class="num">
+                <span th:text="${item.cantidadConfirmada}">18</span>
+                <span class="etiqueta aviso" th:if="${item.excedeSugerido()}">Sobre lo sugerido</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="grupo-botones">
+        <a class="boton" th:href="@{/sugeridos}">Volver al sugerido</a>
+        <a class="boton-secundario" th:href="@{/sugeridos/pedidos}">Ver todos los pedidos</a>
+    </div>
+</main>
+</body>
+</html>

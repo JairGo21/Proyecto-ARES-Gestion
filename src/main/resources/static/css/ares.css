@@ -204,3 +204,42 @@ body {
 .cu05-tabla-scroll { overflow-x: auto; margin: 12px 0; }
 .cu05-inline { display: inline-block; margin-left: 10px; }
 @media (max-width: 760px) { .cu05-filtros { grid-template-columns: 1fr; } }
+
+/* CU-02: componentes independientes para el sugerido de compra. */
+.cu02-semana {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 20px;
+    padding: 14px 18px;
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-left: 4px solid var(--marca);
+    border-radius: 8px;
+}
+.cu02-semana p { margin: 0; }
+.cu02-etiquetas { display: flex; flex-wrap: wrap; gap: 8px; }
+.cu02-aviso-exceso {
+    margin: 0 0 20px;
+    padding: 14px 18px;
+    background: #fffaf0;
+    border: 1px solid #e6c88a;
+    border-left: 4px solid var(--aviso);
+    border-radius: 8px;
+}
+.cu02-aviso-exceso p { margin: 0 0 6px; }
+.cu02-aviso-exceso p:last-child { margin-bottom: 0; }
+.cu02-vacio {
+    padding: 14px 18px;
+    background: #f1f5f9;
+    border: 1px dashed var(--borde);
+    border-radius: 8px;
+    color: var(--suave);
+}
+.cu02-bloque { margin: 32px 0 0; }
+.cu02-bloque h2 { font-size: 1.05rem; margin: 0 0 8px; }
+.cu02-busqueda { max-width: none; grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
+.cu02-busqueda .boton-secundario { min-height: 40px; }
+.cu02-cantidad { width: 90px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px; font: inherit; text-align: right; }
+.cu02-cantidad:focus { outline: 2px solid var(--marca); outline-offset: 1px; }
+.cu02-oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 760px) { .cu02-busqueda { grid-template-columns: 1fr; } }

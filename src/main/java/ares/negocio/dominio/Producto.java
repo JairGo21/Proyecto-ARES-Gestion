@@ -31,6 +31,9 @@ public class Producto {
     /** Factor sobre el consumo reciente a partir del cual se advierte posible sobrecompra (CU-06-HU-02). */
     public static final int FACTOR_ADVERTENCIA_CONSUMO = 2;
 
+    /** Días que cubre un pedido sugerido: se repone pensando en la semana siguiente (CU-02). */
+    public static final int DIAS_QUE_CUBRE_EL_SUGERIDO = 7;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -120,6 +123,50 @@ public class Producto {
             return false;
         }
         return nuevoMinimo > consumoReciente * FACTOR_ADVERTENCIA_CONSUMO;
+    }
+
+    /**
+     * Regla central de CU-02 (tarea T-18): cuántas unidades conviene pedir de este producto.
+     *
+     * Política de reposición "hasta un nivel objetivo":
+     *
+     *   consumoProyectado = consumo reciente llevado a {@value #DIAS_QUE_CUBRE_EL_SUGERIDO} días
+     *   objetivo          = cantidadMinima + consumoProyectado, aumentado en incrementoPorcentual
+     *   sugerido          = objetivo - stockActual, nunca negativo
+     *
+     * Es decir: el pedido deja al producto en su mínimo más lo que se espera vender la
+     * próxima semana, y ese nivel sube cuando la demanda va a ser mayor.
+     *
+     * Reparto de responsabilidades (regla del curso "la entidad resuelve y el servicio coordina"):
+     * la entidad hace la cuenta con lo que sabe de sí misma (mínimo y stock); el servicio
+     * averigua el consumo reciente y traduce el calendario a un porcentaje, porque la
+     * entidad no conoce fechas ni repositorios.
+     *
+     * Extensiones de CU-02 que resuelve esta regla:
+     * - 2b: sin cantidad mínima definida no hay sugerido automático y devuelve 0.
+     * - 2c: sin ventas recientes el consumo proyectado es 0 y el sugerido queda solo con el mínimo.
+     * - 2d: si no hay temporadas, el servicio envía únicamente el incremento de quincena.
+     *
+     * @param consumoReciente     unidades vendidas en la ventana de consumo, nunca negativo
+     * @param diasDelConsumo      largo en días de esa ventana, mayor que cero
+     * @param incrementoPorcentual aumento de demanda a aplicar (0 = semana normal)
+     */
+    public int calcularCantidadSugerida(int consumoReciente, int diasDelConsumo, int incrementoPorcentual) {
+        if (consumoReciente < 0 || diasDelConsumo <= 0 || incrementoPorcentual < 0) {
+            throw new ReglaNegocioException("Los datos para calcular el sugerido no son válidos.");
+        }
+        if (cantidadMinima == null) {
+            return 0;
+        }
+        int consumoProyectado = dividirHaciaArriba(consumoReciente * DIAS_QUE_CUBRE_EL_SUGERIDO, diasDelConsumo);
+        int objetivo = cantidadMinima + consumoProyectado;
+        objetivo += dividirHaciaArriba(objetivo * incrementoPorcentual, 100);
+        return Math.max(0, objetivo - getStockActual());
+    }
+
+    /** División entera que redondea hacia arriba: media unidad de más nunca deja el pedido corto. */
+    private static int dividirHaciaArriba(int numerador, int divisor) {
+        return (numerador + divisor - 1) / divisor;
     }
 
     /**

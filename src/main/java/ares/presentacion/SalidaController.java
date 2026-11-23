@@ -1,8 +1,8 @@
 package ares.presentacion;
 
-import ares.datos.ProductoRepository;
 import ares.negocio.dominio.ReglaNegocioException;
 import ares.negocio.dominio.TipoMovimiento;
+import ares.negocio.servicio.ProductoService;
 import ares.negocio.servicio.SalidaService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -13,26 +13,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * Pantallas del recurso "salida" (CU-04). Regla de capas: el Controller solo llama
+ * al Service, nunca a un Repository.
+ */
 @Controller
 @RequestMapping("/salidas")
 public class SalidaController {
 
     private final SalidaService salidaService;
-    private final ProductoRepository productoRepository;
+    private final ProductoService productoService;
     private final SesionUsuario sesionUsuario;
 
     public SalidaController(SalidaService salidaService,
-                            ProductoRepository productoRepository,
+                            ProductoService productoService,
                             SesionUsuario sesionUsuario) {
         this.salidaService = salidaService;
-        this.productoRepository = productoRepository;
+        this.productoService = productoService;
         this.sesionUsuario = sesionUsuario;
     }
 
     @GetMapping("/nueva")
     public String formularioNuevaSalida(@RequestParam(value = "productoId", required = false) Long productoId,
                                        Model model) {
-        model.addAttribute("productos", productoRepository.listarActivos());
+        model.addAttribute("productos", productoService.listarInventario());
         model.addAttribute("productoSeleccionadoId", productoId);
         model.addAttribute("tiposMovimiento", new TipoMovimiento[]{
                 TipoMovimiento.SALIDA_VENTA, 
@@ -57,7 +61,7 @@ public class SalidaController {
             redirectAttributes.addFlashAttribute("mensajeExito", "Salida registrada con éxito.");
             return "redirect:/productos";
         } catch (ReglaNegocioException e) {
-            model.addAttribute("productos", productoRepository.listarActivos());
+            model.addAttribute("productos", productoService.listarInventario());
             model.addAttribute("productoSeleccionadoId", productoId);
             model.addAttribute("tiposMovimiento", new TipoMovimiento[]{
                     TipoMovimiento.SALIDA_VENTA, 
