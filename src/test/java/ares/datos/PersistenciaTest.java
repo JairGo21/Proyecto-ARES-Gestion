@@ -49,11 +49,12 @@ class PersistenciaTest {
     @PersistenceContext
     private EntityManager em;
 
+    /** 10 productos activos de V2 más los 2 que V6 agrega para CU-02. */
     @Test
-    void datosDePrueba_cargaLosDiezProductosActivos() {
+    void datosDePrueba_cargaLosDoceProductosActivos() {
         List<Producto> activos = productoRepository.listarActivos();
 
-        assertEquals(10, activos.size());
+        assertEquals(12, activos.size());
         assertTrue(activos.stream().noneMatch(p -> p.getNombre().contains("descontinuado")));
     }
 
@@ -73,12 +74,13 @@ class PersistenciaTest {
         assertEquals(3, usuarioRepository.listarTodos().size());
     }
 
+    /** 14 lotes de V2 más los 2 que V6 agrega para CU-02, sin saltos en la numeración. */
     @Test
     void datosDePrueba_lotesTienenIdsConsecutivos() {
         List<Long> ids = em.createQuery("select l.id from Lote l order by l.id", Long.class)
                 .getResultList();
 
-        assertEquals(14, ids.size());
+        assertEquals(16, ids.size());
         for (int i = 0; i < ids.size(); i++) {
             assertEquals(i + 1L, ids.get(i));
         }

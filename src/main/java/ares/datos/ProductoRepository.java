@@ -17,6 +17,19 @@ public interface ProductoRepository {
     /** Productos activos con sus lotes cargados, ordenados por nombre. */
     List<Producto> listarActivos();
 
+    /**
+     * Productos activos que están en o bajo su cantidad mínima (CU-02, paso 2).
+     * Es la misma regla que expresa {@link Producto#tieneStockBajo()}: si una cambia,
+     * la otra debe cambiar con ella.
+     */
+    List<Producto> bajoMinimo();
+
+    /** Productos activos sin cantidad mínima definida (CU-02, extensión 2b). */
+    List<Producto> sinMinimo();
+
+    /** Productos de la lista de ids, con sus lotes cargados (CU-02, pasos 4 a 6). */
+    List<Producto> buscarPorIds(List<Long> ids);
+
     /** Búsqueda parcial por nombre, sin distinguir mayúsculas (CU-02 paso 4, CU-03). */
     List<Producto> buscarPorNombre(String texto);
 

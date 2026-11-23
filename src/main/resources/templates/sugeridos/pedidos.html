@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragmentos :: cabecera('Pedidos confirmados')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu}"></header>
+
+<main class="contenido">
+    <h1>Pedidos confirmados</h1>
+    <p class="nota">CU-02 · Pedidos guardados en estado PENDIENTE_RECEPCION, del más reciente al más antiguo.</p>
+    <p class="mensaje-error" role="alert" th:if="${error}" th:text="${error}"></p>
+
+    <p class="cu02-vacio" th:if="${#lists.isEmpty(pedidos)}">
+        Todavía no hay pedidos confirmados.
+        <a th:href="@{/sugeridos}">Generar el sugerido de compra</a>.
+    </p>
+
+    <table class="tabla" th:unless="${#lists.isEmpty(pedidos)}">
+        <thead>
+        <tr>
+            <th>Pedido</th>
+            <th>Fecha</th>
+            <th>Confirmado por</th>
+            <th class="num">Productos</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${pedidos}">
+            <td th:text="'#' + ${p.id}">#1</td>
+            <td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</td>
+            <td th:text="${p.usuario.nombre}">Freddy Herrera</td>
+            <td class="num" th:text="${#lists.size(p.items)}">3</td>
+            <td><span class="etiqueta aviso" th:text="${p.estado}">PENDIENTE_RECEPCION</span></td>
+            <td>
+                <a class="accion-tabla" th:href="@{/sugeridos/pedidos/{id}(id=${p.id})}">Ver detalle</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/sugeridos}">Volver al sugerido de compra</a></p>
+</main>
+</body>
+</html>

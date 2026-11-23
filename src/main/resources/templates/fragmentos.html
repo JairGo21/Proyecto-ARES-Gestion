@@ -22,6 +22,7 @@
         <a th:href="@{/productos/nuevo}">Nuevo producto</a>
         <a th:href="@{/movimientos}">Historial</a>
         <a th:href="@{/ventas/historial}">Ventas por producto</a>
+        <a th:href="@{/sugeridos}">Sugerido de compra</a>
         <a class="accion" th:href="@{/entradas/nueva}">Registrar entrada</a>
         <a class="accion" th:href="@{/salidas/nueva}">Registrar salida</a>
     </nav>
@@ -40,6 +41,20 @@
             if (enlace.pathname === window.location.pathname) {
                 enlace.setAttribute('aria-current', 'page');
             }
+        });
+
+        // Evita el doble envío: con dos clics seguidos el navegador manda dos veces el
+        // mismo formulario y se registraba el producto por duplicado. El botón se
+        // desactiva después de que el envío ya salió (setTimeout de 0).
+        document.querySelectorAll('form[method="post"]').forEach(function (formulario) {
+            formulario.addEventListener('submit', function () {
+                window.setTimeout(function () {
+                    formulario.querySelectorAll('button[type="submit"]').forEach(function (boton) {
+                        boton.disabled = true;
+                        boton.setAttribute('aria-busy', 'true');
+                    });
+                }, 0);
+            });
         });
     </script>
 </header>

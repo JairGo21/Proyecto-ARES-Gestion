@@ -8,7 +8,7 @@ import ares.negocio.dominio.MovimientoInventario;
 import ares.negocio.dominio.Producto;
 import ares.negocio.dominio.ReglaNegocioException;
 import ares.negocio.dominio.TipoMovimiento;
-import org.springframework.beans.factory.annotation.Autowired;
+import ares.utilidades.FechaHoraBogota;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,18 +30,12 @@ public class ProductoService {
     private final MovimientoRepository movimientoRepository;
     private final AlertaRepository alertaRepository;
 
-    @Autowired
     public ProductoService(ProductoRepository productoRepository,
                            MovimientoRepository movimientoRepository,
                            AlertaRepository alertaRepository) {
         this.productoRepository = productoRepository;
         this.movimientoRepository = movimientoRepository;
         this.alertaRepository = alertaRepository;
-    }
-
-    /** Constructor de compatibilidad para pruebas unitarias que solo ejercitan catálogo/CU-07. */
-    public ProductoService(ProductoRepository productoRepository) {
-        this(productoRepository, null, null);
     }
 
     @Transactional(readOnly = true)
@@ -61,10 +55,10 @@ public class ProductoService {
     /** Suma las unidades vendidas (SALIDA_VENTA) en los últimos 30 días. */
     @Transactional(readOnly = true)
     public int calcularConsumoReciente(Long productoId) {
-        if (movimientoRepository == null || productoId == null) {
+        if (productoId == null) {
             return 0;
         }
-        LocalDateTime limite = LocalDateTime.now().minusDays(DIAS_CONSUMO_RECIENTE);
+        LocalDateTime limite = FechaHoraBogota.ahora().minusDays(DIAS_CONSUMO_RECIENTE);
         return movimientoRepository.listarPorProducto(productoId).stream()
                 .filter(m -> m.getTipo() == TipoMovimiento.SALIDA_VENTA)
                 .filter(m -> !m.getFecha().isBefore(limite))
@@ -106,7 +100,7 @@ public class ProductoService {
     }
 
     private void actualizarAlertaStockMinimo(Producto producto) {
-        if (alertaRepository == null || producto.getId() == null) {
+        if (producto.getId() == null) {
             return;
         }
         var alertaAbierta = alertaRepository.buscarAbiertaDeStockMinimo(producto.getId());
