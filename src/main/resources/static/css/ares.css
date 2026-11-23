@@ -241,5 +241,15 @@ body {
 .cu02-busqueda .boton-secundario { min-height: 40px; }
 .cu02-cantidad { width: 90px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px; font: inherit; text-align: right; }
 .cu02-cantidad:focus { outline: 2px solid var(--marca); outline-offset: 1px; }
+.cu02-cantidad[readonly] { background: #eef1f4; color: var(--suave); }
+.cu02-sin-permiso {
+    margin: 0;
+    padding: 14px 18px;
+    background: #f1f5f9;
+    border: 1px solid var(--borde);
+    border-left: 4px solid var(--suave);
+    border-radius: 8px;
+    color: var(--suave);
+}
 .cu02-oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (max-width: 760px) { .cu02-busqueda { grid-template-columns: 1fr; } }

@@ -72,7 +72,7 @@ Para detener la aplicación: `Ctrl + C` en la consola.
 ./mvnw test          # Windows: .\mvnw.cmd test
 ```
 
-Son **163 pruebas** y deben pasar todas (`Tests run: 163, Failures: 0, Errors: 0`).
+Son **164 pruebas** y deben pasar todas (`Tests run: 164, Failures: 0, Errors: 0`).
 
 Si se quiere compilar desde cero antes de probar:
 
@@ -162,55 +162,12 @@ para el administrador. Ver `docs/CU05_IMPLEMENTACION.md`.
 
 ### CU-02 · Revisar y confirmar el sugerido de compra
 
-`GET /sugeridos` arma la **bandeja de revisión**: los productos en o bajo su mínimo, con su stock,
-su mínimo, el consumo de los últimos 30 días y la cantidad sugerida. `POST /sugeridos/confirmar`
-guarda el pedido en estado `PENDIENTE_RECEPCION`. Los pedidos quedan en `/sugeridos/pedidos`.
-
-**Fórmula del sugerido** (vive en `Producto.calcularCantidadSugerida`):
-
-```
-consumo proyectado = consumo de los últimos 30 días llevado a 7 días (redondeado hacia arriba)
-objetivo           = (cantidad mínima + consumo proyectado) + incremento de demanda
-sugerido           = objetivo - stock actual          (nunca negativo)
-```
-
-El **incremento de demanda** lo decide el servicio con el calendario de la semana:
-
-| Situación | Incremento |
-| --- | --- |
-| Semana normal | 0 % |
-| La semana incluye un día de pago (15 o fin de mes) | +50 % |
-| La semana cae dentro de una temporada alta | +50 % |
-| Las dos cosas a la vez | +100 % |
-
-Ejemplo con Arroz 500 g (mínimo 10, stock 7, 23 unidades vendidas en 30 días):
-consumo proyectado = 6 → objetivo = 16 → **sugerido = 9**. En semana de quincena el objetivo
-sube a 24 y el sugerido a **17**.
-
-**Extensiones del caso de uso y dónde se resuelven:**
-
-| Extensión | Comportamiento |
-| --- | --- |
-| 2a · Ningún producto bajo el mínimo | La bandeja lo informa y deja agregar productos a mano. |
-| 2b · Producto sin mínimo | Sale en una lista aparte, con enlace a CU-06 para definirlo. |
-| 2c · Sin historial suficiente | Se marca «Sin historial» y se sugiere solo con el mínimo. |
-| 2d · Sin temporadas definidas | Se avisa y solo se aplica la regla de quincena. |
-| 4a · Cantidad negativa o no numérica | La rechaza la frontera (no numérica) o la entidad (negativa). |
-| 4b · Cantidad muy superior a la sugerida | `ItemSugerido.excedeSugerido()` dispara la advertencia; no se guarda hasta que el administrador vuelve a confirmar. |
-| *a · Sale sin confirmar | No se guarda nada: la propuesta nunca toca la base de datos. |
-| 6a · Falla el guardado | La transacción se deshace y la pantalla conserva las cantidades escritas. |
-
-### Guion de demostración de CU-02
-
-1. Entrar a **Sugerido de compra** con el usuario **Freddy Herrera** (administrador).
-2. La bandeja muestra Arroz, Café, Atún y Panela. Panela aparece marcada **«Sin historial»**
-   (extensión 2c) y Jabón de barra sale abajo, en **productos sin cantidad mínima** (extensión 2b).
-3. Arriba se lee **«No hay temporadas altas definidas»** (extensión 2d).
-4. Escribir en una cantidad el triple de lo sugerido y pulsar **Confirmar pedido**: aparece la
-   advertencia de la extensión 4b y no se guarda nada. Pulsar otra vez para aceptarla.
-5. Para ver el efecto de una temporada: ir a **Ventas por producto → Administrar temporadas altas**,
-   crear una temporada que cubra la semana de hoy y volver al sugerido; las cantidades suben un 50 %.
-6. El pedido confirmado queda en **Ver pedidos confirmados**, en estado `PENDIENTE_RECEPCION`.
+`GET /sugeridos` arma la bandeja de revisión con los productos en o bajo su mínimo, su consumo
+de los últimos 30 días y la cantidad sugerida, que sube un 50 % en semanas de quincena y otro
+50 % en temporada alta. El administrador ajusta cantidades, agrega productos a mano y confirma;
+`POST /sugeridos/confirmar` guarda el pedido en estado `PENDIENTE_RECEPCION` y queda en
+`/sugeridos/pedidos`. Nada se guarda hasta esa confirmación. Ver `docs/CU02_IMPLEMENTACION.md`
+para la fórmula, las extensiones y el guion de demostración.
 
 ---
 

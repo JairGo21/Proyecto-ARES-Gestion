@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
@@ -95,7 +93,14 @@ public class SugeridoController {
                                     HttpSession sesion,
                                     Model model,
                                     RedirectAttributes redirectAttributes) {
-        exigirAdministrador(sesion);
+        // Solo el administrador confirma (CU-02). El auxiliar y el supervisor pueden
+        // revisar la propuesta, así que la negativa se avisa en la misma pantalla.
+        if (!esAdministrador(sesion)) {
+            redirectAttributes.addFlashAttribute("error",
+                    "Solo el administrador puede confirmar el pedido sugerido. "
+                            + "Puedes revisar la propuesta, pero no guardarla.");
+            return "redirect:/sugeridos";
+        }
 
         if (productoIds == null || productoIds.isEmpty()
                 || sugeridas == null || confirmadas == null
@@ -222,10 +227,7 @@ public class SugeridoController {
         }
     }
 
-    private void exigirAdministrador(HttpSession sesion) {
-        if (sesionUsuario.usuarioActual(sesion).getRol() != RolUsuario.ADMINISTRADOR) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Solo el administrador puede confirmar el pedido sugerido.");
-        }
+    private boolean esAdministrador(HttpSession sesion) {
+        return sesionUsuario.usuarioActual(sesion).getRol() == RolUsuario.ADMINISTRADOR;
     }
 }
