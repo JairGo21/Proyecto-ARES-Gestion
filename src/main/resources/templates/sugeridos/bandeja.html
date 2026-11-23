@@ -4,7 +4,9 @@
 <body>
 <header th:replace="~{fragmentos :: menu}"></header>
 
-<main class="contenido">
+<main class="contenido"
+      th:with="esAdministrador=${usuarioActual != null and usuarioActual.rol.name() == 'ADMINISTRADOR'},
+               rolActual=${usuarioActual != null ? #strings.toLowerCase(usuarioActual.rol.name()) : 'invitado'}">
     <h1>Sugerido de compra</h1>
     <p class="nota">CU-02 · El sistema propone qué comprar; nada se guarda hasta que el administrador confirma.</p>
 
@@ -86,7 +88,8 @@
                     <input class="cu02-cantidad" type="number" min="0" step="1"
                            th:id="'cantidad-' + ${fila.productoId}"
                            name="cantidadConfirmada"
-                           th:value="${fila.cantidadConfirmada}">
+                           th:value="${fila.cantidadConfirmada}"
+                           th:readonly="${!esAdministrador}">
                 </td>
                 <td>
                     <a class="accion-tabla"
@@ -96,11 +99,19 @@
             </tbody>
         </table>
 
-        <p class="tenue">Deja una cantidad en cero para no pedir ese producto.</p>
-        <div class="grupo-botones">
+        <p class="tenue" th:if="${esAdministrador}">Deja una cantidad en cero para no pedir ese producto.</p>
+        <div class="grupo-botones" th:if="${esAdministrador}">
             <button class="boton" type="submit">Confirmar pedido</button>
             <a class="boton-secundario" th:href="@{/sugeridos}">Descartar y volver a calcular</a>
         </div>
+
+        <!-- Solo el administrador confirma: a los demás roles se les explica, no se les bloquea la consulta -->
+        <p class="cu02-sin-permiso" role="status" th:unless="${esAdministrador}">
+            Estás viendo el sugerido como
+            <strong th:text="${rolActual}">auxiliar</strong>.
+            Solo el administrador puede confirmar el pedido; puedes revisar la propuesta y
+            consultar el historial de ventas de cada producto.
+        </p>
     </form>
 
     <!-- Paso 4: agregar productos a mano -->

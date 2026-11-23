@@ -1,5 +1,6 @@
 package ares.presentacion;
 
+import ares.negocio.servicio.SugeridoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,7 +8,6 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ExtendedModelMap;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import java.util.List;
@@ -15,7 +15,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Frontera de CU-02: qué devuelve el controlador y qué deja en el modelo.
@@ -27,12 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class SugeridoControllerTest {
 
     private static final Long FREDDY_ADMINISTRADOR = 1L;
+    private static final Long SUPERVISOR = 2L;
     private static final Long AUXILIAR = 3L;
     private static final Long ARROZ = 6L;
     private static final Long JABON_SIN_MINIMO = 9L;
 
     @Autowired private SugeridoController controller;
     @Autowired private SesionUsuario sesionUsuario;
+    @Autowired private SugeridoService sugeridoService;
 
     private MockHttpSession sesionDe(Long usuarioId) {
         MockHttpSession sesion = new MockHttpSession();
@@ -147,14 +148,39 @@ class SugeridoControllerTest {
         assertTrue(model.containsAttribute("error"));
     }
 
-    /** CU-02 es del administrador: un auxiliar no puede confirmar el pedido. */
+    /**
+     * CU-02 es del administrador. El auxiliar no confirma, pero tampoco se le muestra
+     * una página de error: vuelve a la bandeja con el aviso de permisos.
+     */
     @Test
-    void confirmarSugerido_usuarioSinPermiso_seRechaza() {
+    void confirmarSugerido_auxiliar_regresaALaBandejaConElAviso() {
         MockHttpSession sesion = sesionDe(AUXILIAR);
+        RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
+        int pedidosAntes = sugeridoService.listarPedidos().size();
 
-        assertThrows(ResponseStatusException.class, () -> controller.confirmarSugerido(
+        String vista = controller.confirmarSugerido(
                 List.of(ARROZ), List.of(9), List.of("9"), false,
-                sesion, new ExtendedModelMap(), new RedirectAttributesModelMap()));
+                sesion, new ExtendedModelMap(), redirect);
+
+        assertEquals("redirect:/sugeridos", vista);
+        assertTrue(((String) redirect.getFlashAttributes().get("error"))
+                .contains("Solo el administrador"));
+        assertEquals(pedidosAntes, sugeridoService.listarPedidos().size(),
+                "El pedido no debe guardarse si quien confirma no es administrador.");
+    }
+
+    /** El supervisor tampoco confirma: mismo aviso, sin página de error. */
+    @Test
+    void confirmarSugerido_supervisor_regresaALaBandejaConElAviso() {
+        MockHttpSession sesion = sesionDe(SUPERVISOR);
+        RedirectAttributesModelMap redirect = new RedirectAttributesModelMap();
+
+        String vista = controller.confirmarSugerido(
+                List.of(ARROZ), List.of(9), List.of("9"), false,
+                sesion, new ExtendedModelMap(), redirect);
+
+        assertEquals("redirect:/sugeridos", vista);
+        assertTrue(redirect.getFlashAttributes().containsKey("error"));
     }
 
     @Test
